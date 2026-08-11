@@ -47,6 +47,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tapping a calculator button while a result or selection is in progress
   resets the toolbar to its initial empty state (one tap → enter selection
   mode; second tap → reset).
+
+### Added
+
+- **Settings menu** (gear icon, bottom-right of the toolbar):
+  - **Language** submenu to switch the in-app language (8 locales). The
+    choice is persisted in `UserDefaults` (`UserLanguage`) and applies
+    immediately by rebuilding the popover. `LocaleProvider.localizedString`
+    reads from the per-language `Localizable.strings` so dynamic UI
+    strings (tooltips, prompts, results, about) follow the picked
+    language — independent of the macOS system language.
+  - **Check for Updates…** hits
+    `https://api.github.com/repos/zhengwu119/TopCal/releases/latest`,
+    compares with `CFBundleShortVersionString`, and offers to open the
+    Releases page if a newer version is available.
+  - **About TopCal** shows the version, license and app icon.
+- Info.plist version bumped to **1.2.0** (matches the upcoming v1.2.0
+  release) so the update check returns a sensible answer.
+
 - Per-language README switcher at the top of both READMEs (English /
   简体中文 linked; 日本語 · 한국어 · Deutsch · Français · Español marked
   as translations welcome)

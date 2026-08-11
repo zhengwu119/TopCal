@@ -8,3 +8,17 @@
 "toolbar.select.end" = "Choisir la date de fin";
 "toolbar.result.workdays" = "%@ · %d jours ouvrés / %d jours au total";
 "toolbar.result.days" = "%@ · %d jours au total";
+"settings.title" = "Réglages";
+"settings.language" = "Langue";
+"settings.checkUpdates" = "Rechercher des mises à jour…";
+"settings.about" = "À propos de TopCal";
+"update.error" = "Échec de la vérification";
+"update.available" = "Nouvelle version disponible";
+"update.available.info" = "TopCal %@ est disponible (vous avez %@).";
+"update.download" = "Télécharger";
+"update.latest" = "Vous êtes à jour";
+"update.latest.info" = "TopCal %@ est la dernière version.";
+"about.info" = "Version %@ — un calendrier minimaliste pour la barre de menus macOS.
+Licence MIT © Alex Liu";
+"common.ok" = "OK";
+"common.cancel" = "Annuler";

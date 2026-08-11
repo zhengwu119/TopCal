@@ -40,11 +40,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupPopover() {
-        calendarViewController = CalendarViewController()
+        calendarViewController = makeCalendarController()
         popover = NSPopover()
         popover.contentSize = AppConstants.Popover.size
         popover.behavior = .transient
         popover.contentViewController = calendarViewController
+    }
+
+    /// Creates a calendar controller wired to rebuild the popover when the
+    /// user switches the language in the settings menu.
+    private func makeCalendarController() -> CalendarViewController {
+        let controller = CalendarViewController()
+        controller.onLanguageChanged = { [weak self] in
+            self?.rebuildCalendarPopover()
+        }
+        return controller
+    }
+
+    /// Rebuilds the popover content so it renders in the newly selected
+    /// language (the language preference is persisted by the controller).
+    private func rebuildCalendarPopover() {
+        calendarViewController = makeCalendarController()
+        popover.contentViewController = calendarViewController
+        if popover.isShown {
+            popover.contentSize = AppConstants.Popover.size
+            popover.contentViewController = calendarViewController
+        }
     }
 
     private func scheduleDayRefresh() {

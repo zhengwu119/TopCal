@@ -8,3 +8,17 @@
 "toolbar.select.end" = "請選擇結束日期";
 "toolbar.result.workdays" = "%@ · 工作日 %d 天 / 共 %d 天";
 "toolbar.result.days" = "%@ · 共 %d 天";
+"settings.title" = "設定";
+"settings.language" = "語言";
+"settings.checkUpdates" = "檢查更新…";
+"settings.about" = "關於 TopCal";
+"update.error" = "檢查更新失敗";
+"update.available" = "發現新版本";
+"update.available.info" = "TopCal %@ 已發布（目前版本 %@）。";
+"update.download" = "前往下載";
+"update.latest" = "已是最新版本";
+"update.latest.info" = "TopCal %@ 已是最新版本。";
+"about.info" = "版本 %@ — 極簡 macOS 選單列日曆。
+MIT 授權 © Alex Liu";
+"common.ok" = "好";
+"common.cancel" = "取消";

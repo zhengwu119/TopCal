@@ -8,3 +8,17 @@
 "toolbar.select.end" = "終了日を選択";
 "toolbar.result.workdays" = "%@ · 営業日 %d 日 / 合計 %d 日";
 "toolbar.result.days" = "%@ · 合計 %d 日";
+"settings.title" = "設定";
+"settings.language" = "言語";
+"settings.checkUpdates" = "アップデートを確認…";
+"settings.about" = "TopCal について";
+"update.error" = "アップデート確認に失敗";
+"update.available" = "新しいバージョンがあります";
+"update.available.info" = "TopCal %@ が利用可能です（現在 %@）。";
+"update.download" = "ダウンロード";
+"update.latest" = "最新版です";
+"update.latest.info" = "TopCal %@ は最新版です。";
+"about.info" = "バージョン %@ — 最小限の macOS メニューバーカレンダー。
+MITライセンス © Alex Liu";
+"common.ok" = "OK";
+"common.cancel" = "キャンセル";

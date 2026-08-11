@@ -31,6 +31,10 @@ A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; c
   *Workdays* and *Days*. Pick any two cells in the popover to get the
   number of working days (excluding public holidays, including weekend
   make-up workdays) or total days in that range.
+- ⚙️ **Settings menu** (gear icon, bottom-right): switch the in-app language
+  (English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français ·
+  Español — persisted across launches), check for updates on GitHub,
+  view the About box.
 - 🌍 Localized: English · Simplified Chinese · Traditional Chinese · Japanese · Korean · German · French · Spanish
 - 🚀 Launch at login (via per-user LaunchAgent, no helper app required)
 - 🔔 Optional launch notification to confirm the app is running

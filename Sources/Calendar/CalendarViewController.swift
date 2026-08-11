@@ -27,12 +27,17 @@ class CalendarViewController: NSViewController {
     private var calendarStack: NSStackView!
     private var workdayButton: NSButton!
     private var daysButton: NSButton!
+    private var settingsButton: NSButton!
     private var toolbarLabel: NSTextField!
 
     private var currentDate = Date()
     private var selectionMode: SelectionMode = .none
     private var selectionStart: Date?
     private var selectionEnd: Date?
+
+    /// Called after the user changes the language in the settings menu so the
+    /// owning app delegate can rebuild the popover in the new language.
+    var onLanguageChanged: (() -> Void)?
 
     // MARK: - Lifecycle
 
@@ -154,15 +159,17 @@ class CalendarViewController: NSViewController {
 
     private func setupToolbar() {
         workdayButton = makeToolButton(symbol: "calendar.badge.clock",
-                                       tip: NSLocalizedString("toolbar.workdays.tip",
-                                                              comment: "Toolbar tooltip"),
+                                       tip: LocaleProvider.localizedString("toolbar.workdays.tip",
+                                                                            fallback: "Workdays between two dates"),
                                        action: #selector(workdayTapped))
         daysButton = makeToolButton(symbol: "calendar",
-                                    tip: NSLocalizedString("toolbar.days.tip",
-                                                           comment: "Toolbar tooltip"),
+                                    tip: LocaleProvider.localizedString("toolbar.days.tip",
+                                                                       fallback: "Total days between two dates"),
                                     action: #selector(daysTapped))
-        workdayButton.font = NSFont.systemFont(ofSize: AppConstants.Calendar.toolButtonFontSize, weight: .medium)
-        daysButton.font = NSFont.systemFont(ofSize: AppConstants.Calendar.toolButtonFontSize, weight: .medium)
+        settingsButton = makeToolButton(symbol: "gearshape",
+                                        tip: LocaleProvider.localizedString("settings.title",
+                                                                           fallback: "Settings"),
+                                        action: #selector(settingsTapped))
 
         toolbarLabel = NSTextField(labelWithString: "")
         toolbarLabel.font = NSFont.systemFont(ofSize: AppConstants.Calendar.toolButtonFontSize)
@@ -170,13 +177,15 @@ class CalendarViewController: NSViewController {
         toolbarLabel.alignment = .center
         toolbarLabel.lineBreakMode = .byTruncatingTail
 
-        let toolbar = NSStackView(views: [workdayButton, toolbarLabel, daysButton])
-        toolbar.orientation = .horizontal
-        toolbar.distribution = .fill
-        toolbar.alignment = .centerY
-        toolbar.spacing = 8
+        let toolbar = NSView()
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(toolbar)
+
+        let toolbarControls: [NSView] = [workdayButton, daysButton, toolbarLabel, settingsButton]
+        for control in toolbarControls {
+            control.translatesAutoresizingMaskIntoConstraints = false
+            toolbar.addSubview(control)
+        }
 
         NSLayoutConstraint.activate([
             toolbar.topAnchor.constraint(equalTo: calendarStack.bottomAnchor, constant: 8),
@@ -184,7 +193,22 @@ class CalendarViewController: NSViewController {
             toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -AppConstants.Calendar.margin),
             toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
             toolbar.heightAnchor.constraint(equalToConstant: AppConstants.Calendar.toolbarHeight),
-            toolbarLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 90)
+
+            // Left → right: workdays, days | result label (center) | settings
+            workdayButton.leadingAnchor.constraint(equalTo: toolbar.leadingAnchor),
+            workdayButton.centerYAnchor.constraint(equalTo: toolbar.centerYAnchor),
+
+            daysButton.leadingAnchor.constraint(equalTo: workdayButton.trailingAnchor, constant: 14),
+            daysButton.centerYAnchor.constraint(equalTo: toolbar.centerYAnchor),
+
+            settingsButton.trailingAnchor.constraint(equalTo: toolbar.trailingAnchor),
+            settingsButton.centerYAnchor.constraint(equalTo: toolbar.centerYAnchor),
+
+            toolbarLabel.centerXAnchor.constraint(equalTo: toolbar.centerXAnchor),
+            toolbarLabel.centerYAnchor.constraint(equalTo: toolbar.centerYAnchor),
+            toolbarLabel.leadingAnchor.constraint(greaterThanOrEqualTo: daysButton.trailingAnchor, constant: 8),
+            toolbarLabel.trailingAnchor.constraint(lessThanOrEqualTo: settingsButton.leadingAnchor, constant: -8),
+            toolbarLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 60)
         ])
     }
 
@@ -209,6 +233,153 @@ class CalendarViewController: NSViewController {
         button.action = action
         button.toolTip = tip
         return button
+    }
+
+    // MARK: - Settings menu
+
+    @objc private func settingsTapped(_ sender: NSButton) {
+        let menu = buildSettingsMenu()
+        menu.popUp(positioning: nil,
+                   at: NSPoint(x: 0, y: sender.bounds.height + 4),
+                   in: sender)
+    }
+
+    private func buildSettingsMenu() -> NSMenu {
+        let menu = NSMenu()
+
+        // Language submenu
+        let languageItem = NSMenuItem(
+            title: LocaleProvider.localizedString("settings.language", fallback: "Language"),
+            action: nil, keyEquivalent: "")
+        let languageMenu = NSMenu()
+        for language in LocaleProvider.supportedLanguages {
+            let item = NSMenuItem(title: language.displayName,
+                                  action: #selector(languageSelected(_:)),
+                                  keyEquivalent: "")
+            item.target = self
+            item.representedObject = language.code
+            item.state = language.code == LocaleProvider.currentLanguage ? .on : .off
+            languageMenu.addItem(item)
+        }
+        menu.setSubmenu(languageMenu, for: languageItem)
+        menu.addItem(languageItem)
+
+        menu.addItem(.separator())
+
+        menu.addItem(makeMenuItem(
+            LocaleProvider.localizedString("settings.checkUpdates", fallback: "Check for Updates…"),
+            action: #selector(checkForUpdates)))
+        menu.addItem(makeMenuItem(
+            LocaleProvider.localizedString("settings.about", fallback: "About TopCal"),
+            action: #selector(showAbout)))
+
+        return menu
+    }
+
+    private func makeMenuItem(_ title: String, action: Selector) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
+        item.target = self
+        return item
+    }
+
+    @objc private func languageSelected(_ sender: NSMenuItem) {
+        guard let code = sender.representedObject as? String, code != LocaleProvider.currentLanguage else { return }
+        LocaleProvider.userLanguage = code
+        onLanguageChanged?()
+    }
+
+    @objc private func checkForUpdates() {
+        guard let url = URL(string: "https://api.github.com/repos/zhengwu119/TopCal/releases/latest") else { return }
+        var request = URLRequest(url: url)
+        request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
+            DispatchQueue.main.async {
+                guard let data = data,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let tag = json["tag_name"] as? String else {
+                    self?.showAlert(
+                        message: LocaleProvider.localizedString("update.error", fallback: "Update check failed"),
+                        info: error?.localizedDescription ?? "",
+                        buttons: [])
+                    return
+                }
+                self?.handleUpdateResult(latestTag: tag)
+            }
+        }.resume()
+    }
+
+    private func handleUpdateResult(latestTag: String) {
+        let latest = latestTag.replacingOccurrences(of: "v", with: "")
+        let local = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+
+        if Self.compareVersions(latest, local) > 0 {
+            let alert = NSAlert()
+            alert.alertStyle = .informational
+            alert.messageText = LocaleProvider.localizedString("update.available",
+                                                               fallback: "A new version is available")
+            alert.informativeText = String(format:
+                LocaleProvider.localizedString("update.available.info",
+                                               fallback: "TopCal %@ is available (you have %@)."),
+                latest, local)
+            alert.addButton(withTitle: LocaleProvider.localizedString("update.download", fallback: "Download"))
+            alert.addButton(withTitle: LocaleProvider.localizedString("common.cancel", fallback: "Cancel"))
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                if let url = URL(string: "https://github.com/zhengwu119/TopCal/releases/latest") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        } else {
+            showAlert(
+                message: LocaleProvider.localizedString("update.latest", fallback: "You're up to date"),
+                info: String(format:
+                    LocaleProvider.localizedString("update.latest.info",
+                                                   fallback: "TopCal %@ is the latest version."),
+                    local),
+                buttons: [])
+        }
+    }
+
+    @objc private func showAbout() {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "TopCal · 顶历"
+        alert.informativeText = LocaleProvider.localizedString("about.info",
+                                                               fallback: "Version %@ — a minimal macOS menu bar calendar.\nMIT License © Alex Liu")
+            .replacingOccurrences(of: "%@", with: version)
+        if let appIcon = NSApp.applicationIconImage {
+            alert.icon = appIcon
+        }
+        alert.runModal()
+    }
+
+    private func showAlert(message: String, info: String, buttons: [String]) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = message
+        alert.informativeText = info
+        if buttons.isEmpty {
+            alert.addButton(withTitle: LocaleProvider.localizedString("common.ok", fallback: "OK"))
+        } else {
+            for title in buttons {
+                alert.addButton(withTitle: title)
+            }
+        }
+        alert.runModal()
+    }
+
+    /// Compares "x.y.z" version strings: > 0 if lhs is newer, < 0 if older.
+    private static func compareVersions(_ lhs: String, _ rhs: String) -> Int {
+        let l = lhs.split(separator: ".").compactMap { Int($0) }
+        let r = rhs.split(separator: ".").compactMap { Int($0) }
+        for i in 0..<max(l.count, r.count) {
+            let a = i < l.count ? l[i] : 0
+            let b = i < r.count ? r[i] : 0
+            if a != b { return a > b ? 1 : -1 }
+        }
+        return 0
     }
 
     private func makeWeekdayLabel(_ symbol: String) -> NSTextField {
@@ -265,8 +436,8 @@ class CalendarViewController: NSViewController {
         selectionMode = mode
         selectionStart = nil
         selectionEnd = nil
-        toolbarLabel.stringValue = NSLocalizedString("toolbar.select.start",
-                                                     comment: "Prompt to pick the first date")
+        toolbarLabel.stringValue = LocaleProvider.localizedString("toolbar.select.start",
+                                                                  fallback: "Pick the first date")
         renderCurrentMonth()
     }
 
@@ -277,8 +448,8 @@ class CalendarViewController: NSViewController {
 
         if selectionStart == nil {
             selectionStart = date
-            toolbarLabel.stringValue = NSLocalizedString("toolbar.select.end",
-                                                         comment: "Prompt to pick the last date")
+            toolbarLabel.stringValue = LocaleProvider.localizedString("toolbar.select.end",
+                                                                      fallback: "Pick the last date")
         } else if selectionEnd == nil {
             var start = selectionStart ?? date
             var end = date
@@ -299,13 +470,13 @@ class CalendarViewController: NSViewController {
         case .workdays:
             let workdays = WorkdayCounter.workdays(from: start, to: end)
             toolbarLabel.stringValue = String(format:
-                NSLocalizedString("toolbar.result.workdays",
-                                  comment: "Result text, placeholders: range, workdays, total"),
+                LocaleProvider.localizedString("toolbar.result.workdays",
+                                               fallback: "%@ · %d workdays / %d days total"),
                 range, workdays, total)
         case .days:
             toolbarLabel.stringValue = String(format:
-                NSLocalizedString("toolbar.result.days",
-                                  comment: "Result text, placeholders: range, total"),
+                LocaleProvider.localizedString("toolbar.result.days",
+                                               fallback: "%@ · %d days total"),
                 range, total)
         case .none:
             toolbarLabel.stringValue = ""
