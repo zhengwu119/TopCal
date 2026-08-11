@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nothing yet.
+
+## [1.1.0] - 2026-08-11
+
+### Added
+
 - **Lunar (农历) calendar overlay** in Chinese locales: each cell shows the
   traditional day (`初一`–`三十`); the 1st of each lunar month shows the month
   name (`正月`, `二月`, …); leap months render as `闰X月`. Implemented via
