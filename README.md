@@ -33,7 +33,8 @@ Download the latest `TopCal.app` from [Releases](../../releases) and drag it int
 ### macOS Gatekeeper / "Apple cannot check it for malicious software"
 
 TopCal is **ad-hoc signed** (no paid Apple Developer ID), so macOS may block the
-first launch. This is normal for free open-source apps. The most reliable fix:
+first launch. This is normal for free open-source apps. Remove the quarantine
+flag in Terminal and it will open normally:
 
 ```bash
 # 1. Move the app into /Applications first, then remove the quarantine flag:
@@ -41,10 +42,6 @@ xattr -dr com.apple.quarantine /Applications/TopCal.app
 # 2. Launch it:
 open /Applications/TopCal.app
 ```
-
-If it is still blocked:
-- **Right-click** the app → **Open** → **Open** again in the dialog, or
-- **System Settings → Privacy & Security → Security** → click **Open Anyway**.
 
 ## Build from Source
 

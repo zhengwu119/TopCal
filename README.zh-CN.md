@@ -31,7 +31,7 @@
 
 ### macOS Gatekeeper（"无法验证是否包含恶意软件"）
 
-TopCal 使用 **ad-hoc 签名**（无付费 Apple Developer ID），macOS 首次打开时可能拦截。免费开源应用都会遇到，正常现象。最可靠的方法：
+TopCal 使用 **ad-hoc 签名**（无付费 Apple Developer ID），macOS 首次打开时可能拦截。免费开源应用都会遇到，正常现象。在终端执行以下命令即可正常打开：
 
 ```bash
 # 1. 先把 App 拖入"应用程序"文件夹，再移除隔离标记：
@@ -39,10 +39,6 @@ xattr -dr com.apple.quarantine /Applications/TopCal.app
 # 2. 启动：
 open /Applications/TopCal.app
 ```
-
-如果仍被拦截：
-- **右键**应用 → **打开** → 在弹出的对话框再次点 **打开**；或
-- **系统设置 → 隐私与安全性 → 安全性** → 点 **仍要打开**。
 
 ## 从源码构建
 
