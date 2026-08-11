@@ -8,8 +8,44 @@ enum SelectionMode {
 }
 
 /// A day cell that remembers which date it represents (for click handling).
+/// Layer colors are snapshotted at creation time, so they are re-resolved
+/// whenever the effective appearance changes.
 private final class DayCellView: NSView {
     var representedDate: Date?
+    var isToday = false
+    var isHoliday = false
+    var isMakeupWorkday = false
+    var isEndpoint = false
+    private var dotView: NSView?
+
+    /// Wire up the optional dot and apply the initial colors.
+    func attach(dot: NSView?) {
+        dotView = dot
+        updateColors()
+    }
+
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        updateColors()
+    }
+
+    private func updateColors() {
+        layer?.backgroundColor = isToday ? NSColor.controlAccentColor.cgColor : nil
+        layer?.borderColor = isEndpoint ? NSColor.controlAccentColor.cgColor : nil
+        layer?.borderWidth = isEndpoint ? 1.5 : 0
+        dotView?.layer?.backgroundColor = isHoliday
+            ? NSColor.systemGreen.cgColor
+            : (isToday ? NSColor.white.cgColor : NSColor.labelColor.cgColor)
+    }
+}
+
+/// Popover root view that re-resolves its layer background when the
+/// appearance changes (layer colors are snapshotted at creation time).
+private final class CalendarRootView: NSView {
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+    }
 }
 
 /// Popover content: navigation header + weekday row + day grid + calculator
@@ -57,7 +93,7 @@ class CalendarViewController: NSViewController {
         let frame = NSRect(x: 0, y: 0,
                            width: AppConstants.Popover.size.width,
                            height: AppConstants.Popover.size.height)
-        self.view = NSView(frame: frame)
+        self.view = CalendarRootView(frame: frame)
         setupUI()
     }
 
@@ -591,6 +627,10 @@ class CalendarViewController: NSViewController {
         container.wantsLayer = true
         container.layer?.cornerRadius = AppConstants.Calendar.cellCornerRadius
         container.layer?.masksToBounds = true
+        container.representedDate = cell.date
+        container.isToday = cell.isToday
+        container.isHoliday = cell.isHoliday
+        container.isMakeupWorkday = cell.isMakeupWorkday
 
         // Hover tooltip for holidays / make-up workdays
         if let tip = HolidayCalendar.holidayTooltip(for: cell.date) {
@@ -629,20 +669,13 @@ class CalendarViewController: NSViewController {
             d.layer?.masksToBounds = true
             d.translatesAutoresizingMaskIntoConstraints = false
             container.addSubview(d)
-            if cell.isHoliday {
-                d.layer?.backgroundColor = NSColor.systemGreen.cgColor
-            } else {
-                d.layer?.backgroundColor = (cell.isToday
-                    ? NSColor.white : NSColor.labelColor).cgColor
-            }
             dot = d
         } else {
             dot = nil
         }
 
-        // Colors
+        // Text colors (dynamic — they follow the appearance automatically)
         if cell.isToday {
-            container.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
             dayLabel.textColor = .white
             lunarLabel?.textColor = .white.withAlphaComponent(0.85)
         } else if cell.isCurrentMonth {
@@ -655,14 +688,9 @@ class CalendarViewController: NSViewController {
 
         // Selection highlight (range endpoints)
         let calendar = LocaleProvider.calendar
-        container.representedDate = cell.date
-        let isEndpoint = [selectionStart, selectionEnd]
+        container.isEndpoint = [selectionStart, selectionEnd]
             .compactMap { $0 }
             .contains { calendar.isDate($0, inSameDayAs: cell.date) }
-        if isEndpoint {
-            container.layer?.borderColor = NSColor.controlAccentColor.cgColor
-            container.layer?.borderWidth = 1.5
-        }
 
         // Click gesture for the range selectors
         let gesture = NSClickGestureRecognizer(target: self, action: #selector(cellClicked(_:)))
@@ -687,6 +715,9 @@ class CalendarViewController: NSViewController {
                 dot.heightAnchor.constraint(equalToConstant: AppConstants.Calendar.dotDiameter)
             ])
         }
+
+        // Apply layer colors once (and on every appearance change thereafter)
+        container.attach(dot: dot)
 
         return container
     }
