@@ -37,21 +37,11 @@ let titleFormats = [
     "fr": "MMMM yyyy",
     "es": "MMMM yyyy"
 ]
-let toolbarTitles: [String: (workdays: String, days: String)] = [
-    "en": ("Workdays", "Days"),
-    "zh-Hans": ("工作日", "天数"),
-    "zh-Hant": ("工作日", "天數"),
-    "ja": ("営業日", "日数"),
-    "ko": ("근무일", "일수"),
-    "de": ("Arbeitstage", "Tage"),
-    "fr": ("Jours ouvrés", "Jours"),
-    "es": ("Días laborables", "Días")
-]
 
 LocaleProvider.forcedLocale = Locale(identifier: locale)
 LocaleProvider.forcedDateFormat = titleFormats[locale] ?? "MMMM yyyy"
-// Belt-and-braces: also force lunar on/off via the UserDefaults hook in
-// case LocaleProvider-driven detection ever misses a locale tag.
+// Force the lunar overlay / holiday markers off for English screenshots
+// (they are enabled by default in the app now, not locale-gated).
 UserDefaults.standard.set(locale.hasPrefix("zh"), forKey: LunarCalendar.lunarForceShowKey)
 UserDefaults.standard.synchronize()
 
@@ -72,10 +62,6 @@ let _ = controller.view
 if let focusMonth = focusMonth {
     controller.showMonth(focusMonth)
 }
-// The render bundle defaults to English; override toolbar button titles
-// so the non-English screenshots show the right language.
-let titles = toolbarTitles[locale] ?? toolbarTitles["en"]!
-controller.setToolbarButtonTitles(workdays: titles.workdays, days: titles.days)
 controller.view.frame = NSRect(origin: .zero, size: AppConstants.Popover.size)
 controller.view.layoutSubtreeIfNeeded()
 

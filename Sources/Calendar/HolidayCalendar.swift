@@ -57,13 +57,15 @@ enum HolidayCalendar {
         return makeupWorkdaysByYear[parts.year]?.contains(parts.ymd) ?? false
     }
 
-    /// Whether holiday markers should be shown (Chinese-locale environments only).
+    /// Whether holiday markers should be shown.
+    ///
+    /// Enabled by default (matching the lunar overlay); the `LunarForceShow`
+    /// flag used by the renderer can force it off/on explicitly.
     private static func shouldShow() -> Bool {
         if UserDefaults.standard.object(forKey: LunarCalendar.lunarForceShowKey) != nil {
             return UserDefaults.standard.bool(forKey: LunarCalendar.lunarForceShowKey)
         }
-        let code = LocaleProvider.locale.language.languageCode?.identifier
-        return code?.hasPrefix("zh") ?? false
+        return true
     }
 
     private static func ymdParts(_ date: Date) -> (year: Int, ymd: Int) {

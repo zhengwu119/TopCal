@@ -2,8 +2,8 @@
 "notification.title" = "頂曆";
 "notification.body" = "點擊選單列日期查看行事曆";
 "month.title.format" = "yyyy年M月";
-"toolbar.workdays" = "工作日";
-"toolbar.days" = "天數";
+"toolbar.workdays.tip" = "計算工作日";
+"toolbar.days.tip" = "計算天數間隔";
 "toolbar.select.start" = "請選擇起始日期";
 "toolbar.select.end" = "請選擇結束日期";
 "toolbar.result.workdays" = "%@ · 工作日 %d 天 / 共 %d 天";

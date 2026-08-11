@@ -76,14 +76,6 @@ class CalendarViewController: NSViewController {
         titleLabel.stringValue
     }
 
-    /// Renderer-only hook: override the toolbar button titles because the
-    /// render binary's bundle defaults to English even when we force a
-    /// non-English locale.
-    func setToolbarButtonTitles(workdays: String, days: String) {
-        workdayButton.title = workdays
-        daysButton.title = days
-    }
-
     // MARK: - UI setup
 
     private func setupUI() {
@@ -91,10 +83,10 @@ class CalendarViewController: NSViewController {
         view.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
 
         // Navigation header: « ‹ title › »
-        prevYearButton = makeNavButton(symbol: "chevron.left.2", action: #selector(goToPreviousYear))
-        prevMonthButton = makeNavButton(symbol: "chevron.left", action: #selector(goToPreviousMonth))
-        nextMonthButton = makeNavButton(symbol: "chevron.right", action: #selector(goToNextMonth))
-        nextYearButton = makeNavButton(symbol: "chevron.right.2", action: #selector(goToNextYear))
+        prevYearButton = makeNavButton(title: "«", action: #selector(goToPreviousYear))
+        prevMonthButton = makeNavButton(title: "‹", action: #selector(goToPreviousMonth))
+        nextMonthButton = makeNavButton(title: "›", action: #selector(goToNextMonth))
+        nextYearButton = makeNavButton(title: "»", action: #selector(goToNextYear))
 
         titleLabel = NSTextField(labelWithString: "")
         titleLabel.font = NSFont.systemFont(ofSize: AppConstants.Calendar.titleFontSize, weight: .semibold)
@@ -161,10 +153,14 @@ class CalendarViewController: NSViewController {
     }
 
     private func setupToolbar() {
-        workdayButton = NSButton(title: NSLocalizedString("toolbar.workdays", comment: "Toolbar button"),
-                                 target: self, action: #selector(workdayTapped))
-        daysButton = NSButton(title: NSLocalizedString("toolbar.days", comment: "Toolbar button"),
-                              target: self, action: #selector(daysTapped))
+        workdayButton = makeToolButton(symbol: "calendar.badge.clock",
+                                       tip: NSLocalizedString("toolbar.workdays.tip",
+                                                              comment: "Toolbar tooltip"),
+                                       action: #selector(workdayTapped))
+        daysButton = makeToolButton(symbol: "calendar",
+                                    tip: NSLocalizedString("toolbar.days.tip",
+                                                           comment: "Toolbar tooltip"),
+                                    action: #selector(daysTapped))
         workdayButton.font = NSFont.systemFont(ofSize: AppConstants.Calendar.toolButtonFontSize, weight: .medium)
         daysButton.font = NSFont.systemFont(ofSize: AppConstants.Calendar.toolButtonFontSize, weight: .medium)
 
@@ -192,16 +188,26 @@ class CalendarViewController: NSViewController {
         ])
     }
 
-    private func makeNavButton(symbol: String, action: Selector) -> NSButton {
+    private func makeNavButton(title: String, action: Selector) -> NSButton {
+        let button = NSButton(title: title, target: self, action: action)
+        button.isBordered = false
+        button.font = NSFont.systemFont(ofSize: AppConstants.Calendar.titleFontSize,
+                                        weight: .semibold)
+        button.contentTintColor = .secondaryLabelColor
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        return button
+    }
+
+    private func makeToolButton(symbol: String, tip: String, action: Selector) -> NSButton {
         let button = NSButton()
-        button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
+        button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: tip)
         button.imagePosition = .imageOnly
         button.isBordered = false
         button.contentTintColor = .secondaryLabelColor
         button.target = self
         button.action = action
-        button.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(button)
+        button.toolTip = tip
         return button
     }
 
@@ -229,11 +235,30 @@ class CalendarViewController: NSViewController {
     // MARK: - Toolbar calculators
 
     @objc private func workdayTapped() {
-        beginSelection(.workdays)
+        toggleSelection(.workdays)
     }
 
     @objc private func daysTapped() {
-        beginSelection(.days)
+        toggleSelection(.days)
+    }
+
+    /// Clicking a calculator button either starts a selection or — if a
+    /// selection is already in progress for that mode or a result is shown —
+    /// resets everything back to the initial state.
+    private func toggleSelection(_ mode: SelectionMode) {
+        if selectionMode == mode || selectionEnd != nil || selectionStart != nil {
+            resetSelection()
+            return
+        }
+        beginSelection(mode)
+    }
+
+    private func resetSelection() {
+        selectionMode = .none
+        selectionStart = nil
+        selectionEnd = nil
+        toolbarLabel.stringValue = ""
+        renderCurrentMonth()
     }
 
     private func beginSelection(_ mode: SelectionMode) {

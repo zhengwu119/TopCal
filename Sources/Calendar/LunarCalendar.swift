@@ -16,16 +16,16 @@ enum LunarCalendar {
         "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十"
     ]
 
-    /// Whether lunar dates should be shown (Chinese-locale environments only).
+    /// Whether lunar dates should be shown.
     ///
-    /// Honors `LocaleProvider.forcedLocale` (set by `scripts/render/main.swift`)
-    /// and a `LunarForceShow` UserDefaults flag — both are unused by the app.
+    /// Enabled by default so users see the lunar overlay regardless of their
+    /// macOS system language. The `LunarForceShow` UserDefaults flag (used by
+    /// the screenshot renderer and tests) can force it off/on explicitly.
     static func shouldShow() -> Bool {
         if UserDefaults.standard.object(forKey: lunarForceShowKey) != nil {
             return UserDefaults.standard.bool(forKey: lunarForceShowKey)
         }
-        let code = LocaleProvider.locale.language.languageCode?.identifier
-        return code?.hasPrefix("zh") ?? false
+        return true
     }
 
     static let lunarForceShowKey = "LunarForceShow"

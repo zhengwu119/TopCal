@@ -30,6 +30,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - AppConstants.Popover.size → 248×362 (extra width for chevrons; extra
   height for the calculator toolbar).
+
+### Changed
+
+- **Lunar overlay and Chinese-holiday markers are enabled by default** (no
+  longer gated on the system language). Set `LunarForceShow = NO` via
+  `UserDefaults` to hide them.
+- Calendar navigation arrows are now character buttons (`« ‹ › »`) — keeps
+  the tint consistently neutral regardless of the SF Symbol / NSButton
+  accent-color rendering quirks on recent macOS releases.
+- The bottom toolbar buttons became image-only (SF Symbols
+  `calendar.badge.clock` and `calendar`) with localized tooltips
+  ("计算工作日" / "计算天数间隔" in zh-Hans); the previous text titles were
+  replaced by `toolbar.workdays.tip` / `toolbar.days.tip` keys in every
+  locale.
+- Tapping a calculator button while a result or selection is in progress
+  resets the toolbar to its initial empty state (one tap → enter selection
+  mode; second tap → reset).
 - Per-language README switcher at the top of both READMEs (English /
   简体中文 linked; 日本語 · 한국어 · Deutsch · Français · Español marked
   as translations welcome)

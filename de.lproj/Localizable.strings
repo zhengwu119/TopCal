@@ -2,9 +2,9 @@
 "notification.title" = "TopCal";
 "notification.body" = "Klicken Sie auf das Datum in der Menüleiste, um den Kalender anzuzeigen";
 "month.title.format" = "MMMM yyyy";
-"toolbar.workdays" = "Arbeitstage";
-"toolbar.days" = "Tage";
+"toolbar.workdays.tip" = "Arbeitstage zwischen zwei Daten";
+"toolbar.days.tip" = "Gesamttage zwischen zwei Daten";
 "toolbar.select.start" = "Startdatum wählen";
 "toolbar.select.end" = "Enddatum wählen";
-"toolbar.result.workdays" = "%@ · %d jours ouvrés / %d jours au total";
-"toolbar.result.days" = "%@ · %d jours au total";
+"toolbar.result.workdays" = "%@ · %d Arbeitstage / %d Tage insgesamt";
+"toolbar.result.days" = "%@ · %d Tage insgesamt";

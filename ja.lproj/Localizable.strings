@@ -2,8 +2,8 @@
 "notification.title" = "TopCal";
 "notification.body" = "メニューバーの日付をクリックしてカレンダーを表示します";
 "month.title.format" = "yyyy年M月";
-"toolbar.workdays" = "営業日";
-"toolbar.days" = "日数";
+"toolbar.workdays.tip" = "2つの日付間の営業日";
+"toolbar.days.tip" = "2つの日付間の日数";
 "toolbar.select.start" = "開始日を選択";
 "toolbar.select.end" = "終了日を選択";
 "toolbar.result.workdays" = "%@ · 営業日 %d 日 / 合計 %d 日";

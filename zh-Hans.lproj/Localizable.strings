@@ -2,8 +2,8 @@
 "notification.title" = "顶历";
 "notification.body" = "点击菜单栏日期查看日历";
 "month.title.format" = "yyyy年M月";
-"toolbar.workdays" = "工作日";
-"toolbar.days" = "天数";
+"toolbar.workdays.tip" = "计算工作日";
+"toolbar.days.tip" = "计算天数间隔";
 "toolbar.select.start" = "请选择起始日期";
 "toolbar.select.end" = "请选择结束日期";
 "toolbar.result.workdays" = "%@ · 工作日 %d 天 / 共 %d 天";
