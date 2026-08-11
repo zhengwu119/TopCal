@@ -1,0 +1,4 @@
+/* TopCal - Korean (ko) */
+"notification.title" = "TopCal";
+"notification.body" = "메뉴 막대의 날짜를 클릭하여 달력을 확인하세요";
+"month.title.format" = "yyyy년 M월";

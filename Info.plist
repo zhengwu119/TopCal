@@ -2,14 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>CFBundleDisplayName</key>
+    <string>TopCal</string>
     <key>CFBundleExecutable</key>
-    <string>MenuBarCalendar</string>
+    <string>TopCal</string>
     <key>CFBundleIdentifier</key>
-    <string>com.menubarcalendar.app</string>
+    <string>com.topcal.app</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>zh-Hans</string>
+        <string>zh-Hant</string>
+        <string>ja</string>
+        <string>ko</string>
+        <string>de</string>
+        <string>fr</string>
+        <string>es</string>
+    </array>
     <key>CFBundleName</key>
-    <string>MenuBarCalendar</string>
+    <string>TopCal</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

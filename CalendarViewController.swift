@@ -60,14 +60,13 @@ class CalendarViewController: NSViewController {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(titleLabel)
 
-        // ---- Weekday header ----
+        // Weekday headers — localized, aligned to the calendar's first weekday
         let headerStack = NSStackView()
         headerStack.orientation = .horizontal
         headerStack.distribution = .fillEqually
         headerStack.translatesAutoresizingMaskIntoConstraints = false
 
-        let weekdaySymbols = ["日", "一", "二", "三", "四", "五", "六"]
-        for symbol in weekdaySymbols {
+        for symbol in Self.weekdaySymbols() {
             let label = NSTextField(labelWithString: symbol)
             label.alignment = .center
             label.font = NSFont.systemFont(ofSize: 10, weight: .medium)
@@ -136,10 +135,11 @@ class CalendarViewController: NSViewController {
 
         let calendar = Calendar.current
 
-        // Title
+        // Title — localized month/year format following the system language
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "zh_CN")
-        formatter.dateFormat = "yyyy年 M月"
+        formatter.locale = Locale.autoupdatingCurrent
+        formatter.dateFormat = NSLocalizedString("month.title.format",
+                                                 comment: "Month/year title format for the calendar header")
         titleLabel.stringValue = formatter.string(from: currentDate)
 
         // Determine if we're viewing the current month (for today highlight)
@@ -181,6 +181,18 @@ class CalendarViewController: NSViewController {
     }
 
     // MARK: - Cell Helpers
+
+    /// Localized weekday abbreviations (e.g. 日/一/二… or S/M/T…),
+    /// rotated so the column order starts on the calendar's first weekday.
+    private static func weekdaySymbols() -> [String] {
+        let calendar = Calendar.current
+        var symbols = calendar.veryShortStandaloneWeekdaySymbols
+        let first = calendar.firstWeekday - 1  // 0-based index
+        if first > 0 && first < symbols.count {
+            symbols = Array(symbols[first...] + symbols[..<first])
+        }
+        return symbols
+    }
 
     private func makeDayCell(day: Int, isToday: Bool) -> NSView {
         let container = NSView()

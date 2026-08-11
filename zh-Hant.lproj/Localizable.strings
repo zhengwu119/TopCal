@@ -1,0 +1,4 @@
+/* TopCal - Traditional Chinese (zh-Hant) */
+"notification.title" = "頂曆";
+"notification.body" = "點擊選單列日期查看行事曆";
+"month.title.format" = "yyyy年M月";

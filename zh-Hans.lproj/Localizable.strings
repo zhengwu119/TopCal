@@ -1,0 +1,4 @@
+/* TopCal - Simplified Chinese (zh-Hans) */
+"notification.title" = "顶历";
+"notification.body" = "点击菜单栏日期查看日历";
+"month.title.format" = "yyyy年M月";

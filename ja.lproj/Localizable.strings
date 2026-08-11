@@ -1,0 +1,4 @@
+/* TopCal - Japanese (ja) */
+"notification.title" = "TopCal";
+"notification.body" = "メニューバーの日付をクリックしてカレンダーを表示します";
+"month.title.format" = "yyyy年M月";

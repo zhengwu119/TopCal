@@ -1,0 +1,4 @@
+/* TopCal - German (de) */
+"notification.title" = "TopCal";
+"notification.body" = "Klicken Sie auf das Datum in der Menüleiste, um den Kalender anzuzeigen";
+"month.title.format" = "MMMM yyyy";

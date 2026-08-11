@@ -1,0 +1,4 @@
+/* TopCal - English (en) */
+"notification.title" = "TopCal";
+"notification.body" = "Click the date in the menu bar to view the calendar";
+"month.title.format" = "MMMM yyyy";

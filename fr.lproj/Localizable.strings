@@ -1,0 +1,4 @@
+/* TopCal - French (fr) */
+"notification.title" = "TopCal";
+"notification.body" = "Cliquez sur la date dans la barre de menus pour afficher le calendrier";
+"month.title.format" = "MMMM yyyy";

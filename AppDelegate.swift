@@ -3,7 +3,7 @@ import Foundation
 import os.log
 import UserNotifications
 
-private let log = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "MenuBarCalendar",
+private let log = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.topcal.app",
                         category: "app")
 
 class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -98,8 +98,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     private func showLaunchNotification() {
         let content = UNMutableNotificationContent()
-        content.title = "MenuBarCalendar"
-        content.body = "Click the date in the menu bar to view the calendar"
+        content.title = NSLocalizedString("notification.title", comment: "App name shown in notification")
+        content.body = NSLocalizedString("notification.body", comment: "Notification body")
         content.sound = nil
         UNUserNotificationCenter.current().add(
             UNNotificationRequest(identifier: "launch-\(Date().timeIntervalSince1970)",

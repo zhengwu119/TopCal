@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 import os.log
 
-private let log = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "MenuBarCalendar",
+private let log = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.topcal.app",
                         category: "launch-at-login")
 
 /// Registers the app as a login item by installing a per-user LaunchAgent.
@@ -15,7 +15,7 @@ final class LaunchAtLoginManager {
     private init() {}
 
     private var launchAgentIdentifier: String {
-        Bundle.main.bundleIdentifier ?? "com.menubarcalendar.app"
+        Bundle.main.bundleIdentifier ?? "com.topcal.app"
     }
 
     private var launchAgentDirectory: URL {
@@ -57,12 +57,15 @@ final class LaunchAtLoginManager {
             task.launchPath = "/bin/launchctl"
             // `bootstrap` is the modern API (macOS 11+); `load` is deprecated.
             task.arguments = ["bootstrap", "gui/\(getuid())", launchAgentFile.path]
+            task.standardOutput = FileHandle.nullDevice
+            task.standardError = FileHandle.nullDevice
             try task.run()
             task.waitUntilExit()
 
+            // Non-zero usually means the agent is already loaded — harmless.
             if task.terminationStatus != 0 {
-                os_log("launchctl bootstrap failed with status %d (agent may already be loaded)",
-                       log: log, type: .error, task.terminationStatus)
+                os_log("launchctl bootstrap returned %d (agent may already be loaded)",
+                       log: log, type: .info, task.terminationStatus)
             }
         } catch {
             os_log("Failed to register launch agent: %@", log: log, type: .error,
