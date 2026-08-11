@@ -20,7 +20,10 @@ jobs:
 
       - name: Verify app bundle
         run: |
-          test -x build/TopCal.app/Contents/MacOS/TopCal
-          test -d build/TopCal.app/Contents/Resources/en.lproj
-          codesign --verify build/TopCal.app
+          echo "--- bundle contents ---"
+          ls -la build/TopCal.app/Contents/MacOS/
+          ls -d build/TopCal.app/Contents/Resources/*.lproj
+          test -x build/TopCal.app/Contents/MacOS/TopCal && echo "binary: OK" || { echo "binary: MISSING"; exit 1; }
+          test -d build/TopCal.app/Contents/Resources/en.lproj && echo "lproj: OK" || { echo "lproj: MISSING"; exit 1; }
+          codesign --verify build/TopCal.app && echo "signature: OK" || { echo "signature: FAILED"; exit 1; }
           echo "Build and signature verification passed"
