@@ -32,9 +32,19 @@ final class LaunchAtLoginManager {
     }
 
     /// Installs the LaunchAgent and loads it with launchctl. Safe to call
-    /// multiple times — no-op if already registered.
+    /// multiple times — no-op if already registered **and** the plist still
+    /// points at the current executable (a stale plist from an older install
+    /// path is rewritten and reloaded).
     func register() {
-        if isEnabled { return }
+        let executable = Bundle.main.executablePath
+
+        // Already registered and still pointing at this executable? Nothing to do.
+        if isEnabled,
+           let plist = NSDictionary(contentsOfFile: launchAgentFile.path) as? [String: Any],
+           let args = plist["ProgramArguments"] as? [String],
+           args.first == executable {
+            return
+        }
 
         do {
             try FileManager.default.createDirectory(at: launchAgentDirectory,
@@ -42,7 +52,9 @@ final class LaunchAtLoginManager {
 
             let plist: [String: Any] = [
                 "Label": launchAgentIdentifier,
-                "ProgramArguments": [Bundle.main.bundlePath],
+                // launchd must be pointed at the executable, not the .app
+                // bundle directory, otherwise the job fails to start.
+                "ProgramArguments": [executable],
                 "RunAtLoad": true,
                 "KeepAlive": false,
                 "StandardOutputPath": "/dev/null",
@@ -51,8 +63,10 @@ final class LaunchAtLoginManager {
             let data = try PropertyListSerialization.data(fromPropertyList: plist,
                                                           format: .xml,
                                                           options: 0)
-            try data.write(to: launchAgentFile)
+            try data.write(to: launchAgentFile, options: .atomic)
 
+            // Unload any previous job (e.g. pointing at an old path), then load.
+            try? runLaunchctl(arguments: ["bootout", "gui/\(getuid())", launchAgentFile.path])
             try runLaunchctl(arguments: ["bootstrap", "gui/\(getuid())", launchAgentFile.path])
         } catch {
             os_log("Failed to register launch agent: %@", log: log, type: .error,

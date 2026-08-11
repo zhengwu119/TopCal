@@ -22,7 +22,7 @@ enum AppConstants {
         static let lunarFontSize: CGFloat = 9
         static let titleFontSize: CGFloat = 13
         static let dayCellHeight: CGFloat = 40
-        static let cellCornerRadius: CGFloat = 8
+        static let cellCornerRadius: CGFloat = 6
         static let cellSpacing: CGFloat = 2
         static let margin: CGFloat = 10
         static let topPadding: CGFloat = 10

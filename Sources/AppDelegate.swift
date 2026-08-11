@@ -73,6 +73,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             AppearanceManager.apply()
             self.statusItem.button?.image = StatusBarIconRenderer.image()
+            // Rebuild so layer-based colors (which are resolved to static
+            // CGColors at creation time) pick up the new appearance.
+            self.rebuildCalendarPopover()
         }
         return controller
     }
