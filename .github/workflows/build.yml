@@ -20,6 +20,7 @@ jobs:
 
       - name: Verify app bundle
         run: |
-          test -x build/MenuBarCalendar.app/Contents/MacOS/MenuBarCalendar
-          codesign --verify build/MenuBarCalendar.app
+          test -x build/TopCal.app/Contents/MacOS/TopCal
+          test -d build/TopCal.app/Contents/Resources/en.lproj
+          codesign --verify build/TopCal.app
           echo "Build and signature verification passed"
