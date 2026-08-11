@@ -22,3 +22,4 @@
 Licencia MIT © Alex Liu";
 "common.ok" = "Aceptar";
 "common.cancel" = "Cancelar";
+"settings.quit" = "Salir de TopCal";

@@ -273,7 +273,16 @@ class CalendarViewController: NSViewController {
             LocaleProvider.localizedString("settings.about", fallback: "About TopCal"),
             action: #selector(showAbout)))
 
+        menu.addItem(.separator())
+        menu.addItem(makeMenuItem(
+            LocaleProvider.localizedString("settings.quit", fallback: "Quit TopCal"),
+            action: #selector(quitApp)))
+
         return menu
+    }
+
+    @objc private func quitApp() {
+        NSApp.terminate(nil)
     }
 
     private func makeMenuItem(_ title: String, action: Selector) -> NSMenuItem {
