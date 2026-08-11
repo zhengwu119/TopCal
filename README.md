@@ -28,10 +28,24 @@ Download the latest `TopCal.app` from [Releases](../../releases) and drag it int
 > First launch: the app registers itself as a login item and may ask for
 > notification permission — these are optional and can be denied.
 
+### macOS Gatekeeper / "Apple cannot check it for malicious software"
+
+TopCal is **ad-hoc signed** (no paid Apple Developer ID), so macOS may block the
+first launch. This is normal for free open-source apps. Fix it with any one of:
+
+- **Right-click** the app → **Open** → **Open** again in the dialog, **or**
+- Remove the quarantine attribute in Terminal:
+
+  ```bash
+  xattr -dr com.apple.quarantine /Applications/TopCal.app
+  ```
+
+- If still blocked: **System Settings → Privacy & Security → Security** → click **Open Anyway**.
+
 ## Build from Source
 
 ```bash
-git clone <your-repo-url> TopCal
+git clone https://github.com/zhengwu119/TopCal.git TopCal
 cd TopCal
 ./build.sh
 open build/TopCal.app

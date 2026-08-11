@@ -27,10 +27,23 @@
 
 > 首次启动时应用会注册开机自启项，并可能请求通知权限——两者都可拒绝。
 
+### macOS Gatekeeper（"无法验证是否包含恶意软件"）
+
+TopCal 使用 **ad-hoc 签名**（无付费 Apple Developer ID），macOS 首次打开时可能拦截。免费开源应用都会遇到，正常现象。任选一种方式解决：
+
+- **右键**应用 → **打开** → 在弹出的对话框再次点 **打开**；或
+- 在终端移除隔离属性：
+
+  ```bash
+  xattr -dr com.apple.quarantine /Applications/TopCal.app
+  ```
+
+- 仍被拦截：**系统设置 → 隐私与安全性 → 安全性** → 点 **仍要打开**。
+
 ## 从源码构建
 
 ```bash
-git clone <你的仓库地址> TopCal
+git clone https://github.com/zhengwu119/TopCal.git TopCal
 cd TopCal
 ./build.sh
 open build/TopCal.app
