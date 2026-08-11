@@ -1,6 +1,8 @@
 # TopCal · 顶历
 
-![TopCal](icon.png)
+<div align="center">
+  <img src="icon.png" width="128" alt="TopCal icon">
+</div>
 
 一个极简的 macOS 顶部菜单栏日历：菜单栏显示今天的日期，点击弹出当月日历，支持月份/年份切换。
 
@@ -8,15 +10,25 @@
 
 **顶历** —— 顶部的日历：名字即功能，一眼看出它是常驻在顶部菜单栏的日历组件。
 
+<p align="center">
+  <img src="docs/screenshot-menu.png" width="640" alt="顶历菜单栏">
+</p>
+
 ## 功能
 
 - 📅 顶部菜单栏显示今天的日期（如 `25`）
 - 🗓 点击弹出当月日历，当天高亮
 - ◀ ▶ 弹窗内支持月份切换
-- 🌍 多语言：简体中文 · 繁體中文 · English · 日本語 · 한국어 · Deutsch · Français · Español
+- 🐉 **农历显示**（中文环境）：每个格子下方显示农历日（`初一`～`三十`），初一自动显示月份名（`正月`、`二月`...）
+- 🗓 **上月/下月日期灰色显示**，让当月更突出
+- 🌍 多语言：English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español
 - 🚀 开机自启（通过 LaunchAgent，无需辅助应用）
 - 🔔 启动通知（可选，需授予通知权限）
 - ⚡ 原生 AppKit 实现，无第三方依赖
+
+<p align="center">
+  <img src="docs/screenshot-popover.png" width="540" alt="顶历弹窗（含农历）">
+</p>
 
 ## 系统要求
 
@@ -54,8 +66,9 @@ open build/TopCal.app
 ```bash
 swiftc -o TopCal.app/Contents/MacOS/TopCal \
   -framework AppKit -framework Foundation -framework UserNotifications \
-  main.swift AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+  $(find Sources -name "*.swift" | sort)
 cp Info.plist TopCal.app/Contents/Info.plist
+cp AppIcon.icns TopCal.app/Contents/Resources/AppIcon.icns
 cp -R *.lproj TopCal.app/Contents/Resources/
 codesign --force --deep --sign - TopCal.app
 ```
@@ -66,6 +79,8 @@ codesign --force --deep --sign - TopCal.app
 - 弹窗内点击 `◀` / `▶` 切换月份
 - 点击弹窗外任意位置关闭
 - 界面语言自动跟随系统语言，无需设置
+- **中文环境下农历自动启用**，每个格子下方显示农历日
+- 上月/下月日期**灰色**显示，让当月更醒目
 
 ## 卸载
 
@@ -83,6 +98,7 @@ rm -rf /Applications/TopCal.app
 
 - **菜单栏图标**：将日期数字绘制成 `NSImage` 设置到 `NSStatusBarButton`——比 `button.title` 在新版 macOS 上更可靠
 - **弹窗**：`NSPopover` + `.transient` 行为（点击外部自动关闭）
+- **农历**：使用 Foundation 的 `Calendar(identifier: .chinese)` 计算传统月日/闰月，仅在中文环境下显示；其他语言看到纯公历网格
 - **本地化**：`*.lproj` 资源包（8 种语言）提供通知文案、月份标题格式和本地化应用名；星期标题使用 `Calendar` 的本地化符号并按每周起始日对齐
 - **开机自启**：向 `~/Library/LaunchAgents` 写入 LaunchAgent plist，用 `launchctl bootstrap` 加载——支持 ad-hoc 签名，无需开发者账号或辅助应用
 - **入口**：`main.swift` 使用显式顶层代码而非 `@main`，因为 macOS 26 / Swift 6.2 上 `@main` 在 `NSApplicationDelegate` 子类上会静默失败（详见 `main.swift` 注释）
@@ -96,7 +112,8 @@ rm -rf /Applications/TopCal.app
 │   ├── AppConstants.swift              # 所有可调参数集中一处
 │   ├── Calendar/
 │   │   ├── CalendarViewController.swift  # 弹窗 UI + 月份切换
-│   │   └── MonthGrid.swift              # 纯数据模型（可独立测试）
+│   │   ├── MonthGrid.swift              # 纯数据模型（含邻月格子）
+│   │   └── LunarCalendar.swift          # 农历计算
 │   ├── LaunchAtLogin/
 │   │   └── LaunchAtLoginManager.swift   # LaunchAgent 安装/移除
 │   ├── Notifications/
@@ -105,8 +122,13 @@ rm -rf /Applications/TopCal.app
 │       └── StatusBarIconRenderer.swift  # 把日期数字画成 NSImage
 ├── *.lproj/                             # 多语言资源（8 种语言）
 ├── AppIcon.icns / icon.png              # 应用图标（scripts/make_icon.py 生成）
+├── docs/                                # README 截图
+│   ├── screenshot-menu.png
+│   └── screenshot-popover.png
 ├── Info.plist                           # Bundle 配置（LSUIElement、本地化、图标）
-├── scripts/make_icon.py                 # 从 icon.png 重新生成 AppIcon.icns
+├── scripts/
+│   ├── make_icon.py                     # 从 icon.png 重新生成 AppIcon.icns
+│   └── make_screenshots.py              # 重新生成 README 截图
 ├── build.sh                             # 本地一键构建
 ├── .github/workflows/
 │   ├── build.yml                        # CI：编译 + 签名校验

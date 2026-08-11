@@ -1,18 +1,30 @@
 import Foundation
 
+/// One cell of the month grid. May belong to the previous / current / next month.
+struct MonthCell {
+    let day: Int
+    let monthOffset: Int   // -1 = previous month, 0 = current, +1 = next
+    let isToday: Bool
+    let lunarLabel: String?
+
+    var isCurrentMonth: Bool { monthOffset == 0 }
+}
+
 /// Pure data model for a single calendar month grid.
 /// Separated from the view controller so it can be tested in isolation.
 struct MonthGrid {
-    /// Number of cells per week (always 7, but explicit for clarity).
     static let columnsPerWeek = 7
 
     let date: Date
-    let weekdayOfFirst: Int   // 1..7 (Calendar.component(.weekday, ...))
-    let daysInMonth: Int
     let rows: Int
-    /// Whether this grid shows the current month (controls today's highlight).
     let isCurrentMonth: Bool
     let todayDay: Int
+
+    private let calendar: Calendar
+    private let startOfMonth: Date
+    private let daysInMonth: Int
+    private let daysInPreviousMonth: Int
+    private let firstWeekdayOffset: Int  // 0-based offset of the 1st of the month
 
     /// Builds a grid for the given month. Returns nil if the date is invalid.
     static func make(for date: Date,
@@ -30,19 +42,48 @@ struct MonthGrid {
         let rows = Int(ceil(Double(totalCells) / Double(Self.columnsPerWeek)))
         let todayDay = calendar.component(.day, from: today)
 
+        let previousMonth = calendar.date(byAdding: .month, value: -1, to: start) ?? start
+        let prevRange = calendar.range(of: .day, in: .month, for: previousMonth)
+
         return MonthGrid(date: date,
-                         weekdayOfFirst: weekday,
-                         daysInMonth: range.count,
                          rows: rows,
                          isCurrentMonth: isCurrent,
-                         todayDay: todayDay)
+                         todayDay: todayDay,
+                         calendar: calendar,
+                         startOfMonth: start,
+                         daysInMonth: range.count,
+                         daysInPreviousMonth: prevRange?.count ?? 30,
+                         firstWeekdayOffset: weekday - 1)
     }
 
-    /// The day-of-month at the given cell, or nil if it's a leading/trailing empty slot.
-    func dayAt(row: Int, column: Int) -> Int? {
+    /// The cell at the given row/column, including trailing cells from the
+    /// adjacent months.
+    func cellAt(row: Int, column: Int) -> MonthCell {
         let index = row * Self.columnsPerWeek + column
-        let day = index - (weekdayOfFirst - 1) + 1
-        return (1...daysInMonth).contains(day) ? day : nil
+        // 0 means the 1st day of the current month
+        let dayOffsetFromFirst = index - firstWeekdayOffset
+        let dayInMonth = dayOffsetFromFirst + 1
+
+        let cellDate = calendar.date(byAdding: .day, value: dayOffsetFromFirst,
+                                     to: startOfMonth) ?? date
+
+        let day: Int
+        let monthOffset: Int
+        if dayInMonth >= 1 && dayInMonth <= daysInMonth {
+            day = dayInMonth
+            monthOffset = 0
+        } else if dayInMonth < 1 {
+            day = daysInPreviousMonth + dayInMonth
+            monthOffset = -1
+        } else {
+            day = dayInMonth - daysInMonth
+            monthOffset = 1
+        }
+
+        let isToday = calendar.isDate(cellDate, inSameDayAs: Date())
+        let lunarLabel = LunarCalendar.dayLabel(for: cellDate)
+        return MonthCell(day: day, monthOffset: monthOffset, isToday: isToday,
+                         lunarLabel: lunarLabel)
     }
 
     /// Localized title for the month header (e.g. "2026年8月" / "August 2026").

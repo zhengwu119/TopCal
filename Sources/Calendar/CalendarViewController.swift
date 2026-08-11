@@ -3,18 +3,14 @@ import AppKit
 /// Popover content: month/year header + weekday row + day grid.
 ///
 /// Data computation lives in `MonthGrid` (a pure model); this view controller
-/// is responsible only for layout and rendering.
+/// is responsible only for layout and rendering. In Chinese locales each cell
+/// also shows the lunar date, and leading/trailing cells from adjacent months
+/// are rendered dimmed.
 class CalendarViewController: NSViewController {
     private var prevButton: NSButton!
     private var nextButton: NSButton!
     private var titleLabel: NSTextField!
     private var calendarStack: NSStackView!
-    private var grid = MonthGrid.make(for: Date()) ?? MonthGrid(date: Date(),
-                                                               weekdayOfFirst: 1,
-                                                               daysInMonth: 1,
-                                                               rows: 1,
-                                                               isCurrentMonth: true,
-                                                               todayDay: 1)
     private var currentDate = Date()
 
     override init(nibName: String?, bundle: Bundle?) {
@@ -147,56 +143,78 @@ class CalendarViewController: NSViewController {
     // MARK: - Rendering
 
     private func renderCurrentMonth() {
-        // Update title from the current month
         guard let grid = MonthGrid.make(for: currentDate) else { return }
-        self.grid = grid
         titleLabel.stringValue = grid.formattedTitle
 
-        // Rebuild day grid
         for arrangedSubview in calendarStack.arrangedSubviews {
             calendarStack.removeArrangedSubview(arrangedSubview)
             arrangedSubview.removeFromSuperview()
         }
+
         for row in 0..<grid.rows {
             let rowStack = NSStackView()
             rowStack.orientation = .horizontal
             rowStack.distribution = .fillEqually
             rowStack.spacing = AppConstants.Calendar.cellSpacing
             for column in 0..<MonthGrid.columnsPerWeek {
-                if let day = grid.dayAt(row: row, column: column) {
-                    let isToday = grid.isCurrentMonth && day == grid.todayDay
-                    rowStack.addArrangedSubview(makeDayCell(day: day, isToday: isToday))
-                } else {
-                    rowStack.addArrangedSubview(NSView())
-                }
+                rowStack.addArrangedSubview(makeDayCell(grid.cellAt(row: row, column: column)))
             }
             rowStack.heightAnchor.constraint(equalToConstant: AppConstants.Calendar.dayCellHeight).isActive = true
             calendarStack.addArrangedSubview(rowStack)
         }
     }
 
-    private func makeDayCell(day: Int, isToday: Bool) -> NSView {
+    private func makeDayCell(_ cell: MonthCell) -> NSView {
         let container = NSView()
         container.wantsLayer = true
         container.layer?.cornerRadius = AppConstants.Calendar.dayCellHeight / 2
         container.layer?.masksToBounds = true
 
-        let label = NSTextField(labelWithString: String(day))
-        label.alignment = .center
-        label.font = NSFont.systemFont(ofSize: AppConstants.Calendar.dayCellFontSize,
-                                       weight: AppConstants.Calendar.dayCellFontWeight)
-        label.textColor = isToday ? .white : .labelColor
-        label.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(label)
+        // Gregorian day number
+        let dayLabel = NSTextField(labelWithString: String(cell.day))
+        dayLabel.alignment = .center
+        dayLabel.font = NSFont.systemFont(ofSize: AppConstants.Calendar.dayCellFontSize,
+                                          weight: cell.isCurrentMonth ? .regular : .light)
+        dayLabel.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(dayLabel)
 
-        if isToday {
+        // Lunar day (Chinese locales only)
+        let lunarLabel: NSTextField?
+        if let lunar = cell.lunarLabel {
+            let label = NSTextField(labelWithString: lunar)
+            label.alignment = .center
+            label.font = NSFont.systemFont(ofSize: AppConstants.Calendar.lunarFontSize, weight: .light)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            container.addSubview(label)
+            lunarLabel = label
+        } else {
+            lunarLabel = nil
+        }
+
+        // Colors
+        if cell.isToday {
             container.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
+            dayLabel.textColor = .white
+            lunarLabel?.textColor = .white.withAlphaComponent(0.85)
+        } else if cell.isCurrentMonth {
+            dayLabel.textColor = .labelColor
+            lunarLabel?.textColor = .secondaryLabelColor
+        } else {
+            dayLabel.textColor = .tertiaryLabelColor
+            lunarLabel?.textColor = .tertiaryLabelColor.withAlphaComponent(0.6)
         }
 
         NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+            dayLabel.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            dayLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 3)
         ])
+        if let lunarLabel = lunarLabel {
+            NSLayoutConstraint.activate([
+                lunarLabel.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+                lunarLabel.topAnchor.constraint(equalTo: dayLabel.bottomAnchor, constant: 0)
+            ])
+        }
+
         return container
     }
 }

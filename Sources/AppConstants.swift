@@ -5,7 +5,7 @@ enum AppConstants {
     static let fallbackBundleIdentifier = "com.topcal.app"
 
     enum Popover {
-        static let size = NSSize(width: 240, height: 270)
+        static let size = NSSize(width: 240, height: 300)
     }
 
     enum StatusIcon {
@@ -17,9 +17,9 @@ enum AppConstants {
     enum Calendar {
         static let weekdayFontSize: CGFloat = 10
         static let dayCellFontSize: CGFloat = 12
-        static let dayCellFontWeight: NSFont.Weight = .regular
+        static let lunarFontSize: CGFloat = 9
         static let titleFontSize: CGFloat = 13
-        static let dayCellHeight: CGFloat = 26
+        static let dayCellHeight: CGFloat = 34
         static let cellSpacing: CGFloat = 2
         static let margin: CGFloat = 10
         static let topPadding: CGFloat = 10
