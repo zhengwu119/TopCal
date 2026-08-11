@@ -33,8 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and uses `Bundle.main.bundleIdentifier ?? AppConstants.fallbackBundleIdentifier`
 - README Gatekeeper section: only the `xattr -dr com.apple.quarantine` command
 - English README has zero Chinese; icon displayed at 128px centered; README
-  screenshots added (`docs/screenshot-menu.png`, `docs/screenshot-popover.png`,
-  regenerated via `scripts/make_screenshots.py`)
+  screenshots added per locale (`docs/en/`, `docs/zh-Hans/` — English shows no
+  lunar overlay, Simplified Chinese shows lunar dates; regenerated via
+  `scripts/make_screenshots.py`)
 
 ## [1.0.0] - 2026-08-11
 

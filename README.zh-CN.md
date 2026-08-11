@@ -11,7 +11,7 @@
 **顶历** —— 顶部的日历：名字即功能，一眼看出它是常驻在顶部菜单栏的日历组件。
 
 <p align="center">
-  <img src="docs/screenshot-menu.png" width="640" alt="顶历菜单栏">
+  <img src="docs/zh-Hans/screenshot-menu.png" width="640" alt="顶历菜单栏">
 </p>
 
 ## 功能
@@ -27,7 +27,7 @@
 - ⚡ 原生 AppKit 实现，无第三方依赖
 
 <p align="center">
-  <img src="docs/screenshot-popover.png" width="540" alt="顶历弹窗（含农历）">
+  <img src="docs/zh-Hans/screenshot-popover.png" width="540" alt="顶历弹窗（含农历）">
 </p>
 
 ## 系统要求
@@ -122,9 +122,13 @@ rm -rf /Applications/TopCal.app
 │       └── StatusBarIconRenderer.swift  # 把日期数字画成 NSImage
 ├── *.lproj/                             # 多语言资源（8 种语言）
 ├── AppIcon.icns / icon.png              # 应用图标（scripts/make_icon.py 生成）
-├── docs/                                # README 截图
-│   ├── screenshot-menu.png
-│   └── screenshot-popover.png
+├── docs/                                # 各语言 README 截图
+│   ├── en/                              #   英文（无农历）
+│   │   ├── screenshot-menu.png
+│   │   └── screenshot-popover.png
+│   └── zh-Hans/                         #   简体中文（含农历）
+│       ├── screenshot-menu.png
+│       └── screenshot-popover.png
 ├── Info.plist                           # Bundle 配置（LSUIElement、本地化、图标）
 ├── scripts/
 │   ├── make_icon.py                     # 从 icon.png 重新生成 AppIcon.icns

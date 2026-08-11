@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Generate UI screenshots for the README.
+"""Generate per-locale UI screenshots for the READMEs.
 
-Produces two images:
-  docs/screenshot-menu.png     — menu bar close-up with the TopCal day pill
-  docs/screenshot-popover.png  — desktop + menu bar + calendar popover
+For each locale it produces two images:
+  docs/<locale>/screenshot-menu.png     — menu bar close-up with the TopCal pill
+  docs/<locale>/screenshot-popover.png  — desktop + menu bar + calendar popover
 
-The popover screenshot shows August 2026 with lunar dates (from a JSON map
-produced by a small Swift helper using Calendar(identifier: .chinese)).
+The popover screenshots show August 2026. In Chinese locales each cell also
+shows the lunar date (from a JSON map produced by a small Swift helper using
+Calendar(identifier: .chinese)); other locales show the plain Gregorian grid.
 
-Usage: make_screenshots.py [lunar_map.json]
+Usage: make_screenshots.py [lunar_map.json] [locale ...]
+  lunar_map.json   JSON mapping "YYYY-MM-DD" -> lunar label (default: /tmp/lunar_map.json)
+  locale           en, zh-Hans, ... (default: en zh-Hans)
 """
 import json
 import os
@@ -19,6 +22,24 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 FONT_CN = "/System/Library/Fonts/STHeiti Medium.ttc"
 FONT_ARIAL_BOLD = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+
+# Per-locale rendering config ---------------------------------------------
+LOCALES = {
+    "en": {
+        "dir": "en",
+        "menus": ["File", "Edit", "View", "Window", "Help"],
+        "weekdays": ["S", "M", "T", "W", "T", "F", "S"],
+        "month_title": "August 2026",
+        "show_lunar": False,
+    },
+    "zh-Hans": {
+        "dir": "zh-Hans",
+        "menus": ["文件", "编辑", "显示", "窗口", "帮助"],
+        "weekdays": ["日", "一", "二", "三", "四", "五", "六"],
+        "month_title": "2026年8月",
+        "show_lunar": True,
+    },
+}
 
 
 def font(path, size):
@@ -55,16 +76,14 @@ def gradient(w, h, top, bottom):
 
 # ---------------------------------------------------------------- menu bar
 
-def draw_menu_bar(draw, x0, y0, x1, y1, dark, with_clock=True):
+def draw_menu_bar(draw, x0, y0, x1, y1, cfg, with_clock=True):
     """Draws a macOS-style menu bar with the TopCal red pill on the right."""
     h = y1 - y0
-    fill = (38, 38, 42, 235) if dark else (245, 245, 247, 240)
-    draw.rectangle([x0, y0, x1, y1], fill=fill)
-    # bottom hairline
+    draw.rectangle([x0, y0, x1, y1], fill=(38, 38, 42, 235))
     draw.line([x0, y1 - 1, x1, y1 - 1], fill=(0, 0, 0, 40))
 
-    text_color = (255, 255, 255, 255) if dark else (20, 20, 20, 255)
-    dim_color = (255, 255, 255, 150) if dark else (120, 120, 120, 255)
+    text_color = (255, 255, 255, 255)
+    dim_color = (255, 255, 255, 150)
     accent = (255, 84, 94, 255)  # TopCal red
 
     # app name + menus (left)
@@ -73,9 +92,9 @@ def draw_menu_bar(draw, x0, y0, x1, y1, dark, with_clock=True):
     cy = (y0 + y1) / 2
     text_left(draw, x0 + 18, cy, "TopCal", f_app, text_color)
     x = x0 + 110
-    for m in ["文件", "编辑", "显示", "窗口", "帮助"]:
+    for m in cfg["menus"]:
         text_left(draw, x, cy, m, f_menu, dim_color)
-        x += 62
+        x += 78
 
     # right-side items (right to left)
     rx = x1 - 16
@@ -108,7 +127,7 @@ def draw_menu_bar(draw, x0, y0, x1, y1, dark, with_clock=True):
     rx = bx - 16
 
     # wifi (three arcs, simplified as dots)
-    for i, rr in enumerate([3, 8, 14]):
+    for _, rr in enumerate([3, 8, 14]):
         cx = rx - rr - 14
         draw.arc([cx - rr, cy - rr, cx + rr, cy + rr], start=180, end=360,
                  fill=dim_color, width=3)
@@ -121,12 +140,11 @@ def draw_menu_bar(draw, x0, y0, x1, y1, dark, with_clock=True):
 
 # ---------------------------------------------------------------- popover
 
-def draw_popover(img, draw, x0, y0, lunar_map, scale=2):
+def draw_popover(img, draw, x0, y0, cfg, lunar_map, scale=2):
     W, H = 240 * scale, 300 * scale  # popover is 240x300 pt
     margin = 10 * scale
     accent = (10, 132, 255, 255)  # system blue for today
     text_main = (30, 30, 30, 255)
-    text_dim = (140, 140, 140, 255)
     text_weekday = (120, 120, 120, 255)
     text_adjacent = (190, 190, 190, 255)
     lunar_dim = (170, 170, 170, 255)
@@ -151,14 +169,14 @@ def draw_popover(img, draw, x0, y0, lunar_map, scale=2):
     f_nav = font(FONT_CN, 13 * scale)
     f_title = font(FONT_CN, 13 * scale)
     text_left(draw, x0 + 22 * scale, hy, "◀", f_nav, (90, 90, 90, 255))
-    text_center(draw, x0 + W / 2, hy, "2026年8月", f_title, text_main)
+    text_center(draw, x0 + W / 2, hy, cfg["month_title"], f_title, text_main)
     text_left(draw, x0 + W - 40 * scale, hy, "▶", f_nav, (90, 90, 90, 255))
 
     # ---- weekday row ----
     wy = hy + 26 * scale
     f_week = font(FONT_CN, 10 * scale)
     col_w = (W - 2 * margin) / 7.0
-    for i, wd in enumerate("日一二三四五六"):
+    for i, wd in enumerate(cfg["weekdays"]):
         text_center(draw, x0 + margin + col_w * (i + 0.5), wy, wd, f_week, text_weekday)
 
     # ---- day grid ----
@@ -181,7 +199,7 @@ def draw_popover(img, draw, x0, y0, lunar_map, scale=2):
 
             is_current = d.month == 8
             is_today = d == today
-            lunar = lunar_map.get(d.isoformat(), "")
+            lunar = lunar_map.get(d.isoformat(), "") if cfg["show_lunar"] else ""
 
             day_color = (255, 255, 255, 255) if is_today else (
                 text_main if is_current else text_adjacent)
@@ -195,39 +213,46 @@ def draw_popover(img, draw, x0, y0, lunar_map, scale=2):
                         r_px, accent)
 
             text_center(draw, cx, cy - 8 * scale, str(d.day), f_day, day_color)
-            text_center(draw, cx, cy + 10 * scale, lunar, f_lunar, lunar_color)
+            if lunar:
+                text_center(draw, cx, cy + 10 * scale, lunar, f_lunar, lunar_color)
 
 
 # ---------------------------------------------------------------- main
 
 def main():
     lunar_path = sys.argv[1] if len(sys.argv) > 1 else "/tmp/lunar_map.json"
-    out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs")
-    os.makedirs(out_dir, exist_ok=True)
+    locales = sys.argv[2:] if len(sys.argv) > 2 else ["en", "zh-Hans"]
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs")
 
-    with open(lunar_path) as f:
-        lunar_map = json.load(f)
+    lunar_map = {}
+    if os.path.exists(lunar_path):
+        with open(lunar_path) as f:
+            lunar_map = json.load(f)
 
-    # --- 1. menu bar close-up ---
-    img1 = Image.new("RGBA", (640, 100), (0, 0, 0, 0))
-    d1 = ImageDraw.Draw(img1)
-    # wallpaper hint below the bar
-    img1.alpha_composite(gradient(640, 40, (122, 133, 255), (74, 114, 255)), (0, 60))
-    draw_menu_bar(d1, 0, 0, 640, 60, dark=True, with_clock=False)
-    p1 = os.path.join(out_dir, "screenshot-menu.png")
-    img1.convert("RGB").save(p1)
-    print("Saved", p1)
+    for locale in locales:
+        cfg = LOCALES[locale]
+        out_dir = os.path.join(base, cfg["dir"])
+        os.makedirs(out_dir, exist_ok=True)
 
-    # --- 2. desktop + popover ---
-    W2, H2 = 720, 780
-    img2 = Image.new("RGBA", (W2, H2))
-    img2.alpha_composite(gradient(W2, H2, (92, 122, 255), (74, 74, 190)), (0, 0))
-    d2 = ImageDraw.Draw(img2)
-    draw_menu_bar(d2, 0, 0, W2, 48, dark=True)
-    draw_popover(img2, d2, W2 - 480 - 50, 66, lunar_map, scale=2)
-    p2 = os.path.join(out_dir, "screenshot-popover.png")
-    img2.convert("RGB").save(p2)
-    print("Saved", p2)
+        # 1. menu bar close-up
+        img1 = Image.new("RGBA", (640, 100), (0, 0, 0, 0))
+        d1 = ImageDraw.Draw(img1)
+        img1.alpha_composite(gradient(640, 40, (122, 133, 255), (74, 114, 255)), (0, 60))
+        draw_menu_bar(d1, 0, 0, 640, 60, cfg, with_clock=False)
+        p1 = os.path.join(out_dir, "screenshot-menu.png")
+        img1.convert("RGB").save(p1)
+        print("Saved", p1)
+
+        # 2. desktop + popover
+        W2, H2 = 720, 780
+        img2 = Image.new("RGBA", (W2, H2))
+        img2.alpha_composite(gradient(W2, H2, (92, 122, 255), (74, 74, 190)), (0, 0))
+        d2 = ImageDraw.Draw(img2)
+        draw_menu_bar(d2, 0, 0, W2, 48, cfg)
+        draw_popover(img2, d2, W2 - 480 - 50, 66, cfg, lunar_map, scale=2)
+        p2 = os.path.join(out_dir, "screenshot-popover.png")
+        img2.convert("RGB").save(p2)
+        print("Saved", p2)
 
 
 if __name__ == "__main__":
