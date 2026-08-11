@@ -26,3 +26,7 @@ MIT License © Alex Liu";
 "holiday.tooltip" = "%@ · Public Holiday";
 "makeup.tooltip" = "%@ · Make-up Workday";
 "settings.launchAtLogin" = "Launch at Login";
+"settings.appearance" = "Appearance";
+"settings.appearance.system" = "Follow System";
+"settings.appearance.light" = "Light";
+"settings.appearance.dark" = "Dark";

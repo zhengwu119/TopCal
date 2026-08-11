@@ -26,3 +26,7 @@ MIT-Lizenz © Alex Liu";
 "holiday.tooltip" = "%@ · Feiertag";
 "makeup.tooltip" = "%@ · Nacharbeitstag";
 "settings.launchAtLogin" = "Beim Anmelden starten";
+"settings.appearance" = "Erscheinungsbild";
+"settings.appearance.system" = "System folgen";
+"settings.appearance.light" = "Hell";
+"settings.appearance.dark" = "Dunkel";

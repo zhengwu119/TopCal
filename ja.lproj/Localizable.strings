@@ -26,3 +26,7 @@ MITライセンス © Alex Liu";
 "holiday.tooltip" = "%@ · 祝日";
 "makeup.tooltip" = "%@ · 振替出勤";
 "settings.launchAtLogin" = "ログイン時に起動";
+"settings.appearance" = "外観";
+"settings.appearance.system" = "システムに従う";
+"settings.appearance.light" = "ライト";
+"settings.appearance.dark" = "ダーク";

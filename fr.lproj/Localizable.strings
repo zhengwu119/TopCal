@@ -26,3 +26,7 @@ Licence MIT © Alex Liu";
 "holiday.tooltip" = "%@ · Jour férié";
 "makeup.tooltip" = "%@ · Jour de récupération";
 "settings.launchAtLogin" = "Lancer à la connexion";
+"settings.appearance" = "Apparence";
+"settings.appearance.system" = "Suivre le système";
+"settings.appearance.light" = "Clair";
+"settings.appearance.dark" = "Sombre";

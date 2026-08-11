@@ -26,3 +26,7 @@ MIT 许可证 © Alex Liu";
 "holiday.tooltip" = "%@ · 放假";
 "makeup.tooltip" = "%@ · 调休上班";
 "settings.launchAtLogin" = "开机启动";
+"settings.appearance" = "外观";
+"settings.appearance.system" = "跟随系统";
+"settings.appearance.light" = "浅色";
+"settings.appearance.dark" = "暗黑";

@@ -39,6 +39,10 @@ class CalendarViewController: NSViewController {
     /// owning app delegate can rebuild the popover in the new language.
     var onLanguageChanged: (() -> Void)?
 
+    /// Called after the user changes the appearance (theme) so the owning app
+    /// delegate can apply it and refresh the menu-bar icon.
+    var onAppearanceChanged: (() -> Void)?
+
     // MARK: - Lifecycle
 
     override init(nibName: String?, bundle: Bundle?) {
@@ -264,6 +268,29 @@ class CalendarViewController: NSViewController {
         menu.setSubmenu(languageMenu, for: languageItem)
         menu.addItem(languageItem)
 
+        // Appearance submenu (theme)
+        let appearanceItem = NSMenuItem(
+            title: LocaleProvider.localizedString("settings.appearance", fallback: "Appearance"),
+            action: nil, keyEquivalent: "")
+        let appearanceMenu = NSMenu()
+        let appearanceModes: [(mode: AppearanceManager.Mode, key: String, fallback: String)] = [
+            (.system, "settings.appearance.system", "Follow System"),
+            (.light, "settings.appearance.light", "Light"),
+            (.dark, "settings.appearance.dark", "Dark")
+        ]
+        for entry in appearanceModes {
+            let item = NSMenuItem(
+                title: LocaleProvider.localizedString(entry.key, fallback: entry.fallback),
+                action: #selector(appearanceSelected(_:)),
+                keyEquivalent: "")
+            item.target = self
+            item.representedObject = entry.mode.rawValue
+            item.state = entry.mode == AppearanceManager.current ? .on : .off
+            appearanceMenu.addItem(item)
+        }
+        menu.setSubmenu(appearanceMenu, for: appearanceItem)
+        menu.addItem(appearanceItem)
+
         menu.addItem(.separator())
 
         // Launch at login toggle
@@ -320,6 +347,12 @@ class CalendarViewController: NSViewController {
         guard let code = sender.representedObject as? String, code != LocaleProvider.currentLanguage else { return }
         LocaleProvider.userLanguage = code
         onLanguageChanged?()
+    }
+
+    @objc private func appearanceSelected(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String else { return }
+        UserDefaults.standard.set(raw, forKey: AppearanceManager.preferenceKey)
+        onAppearanceChanged?()
     }
 
     @objc private func checkForUpdates() {

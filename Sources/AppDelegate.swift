@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - NSApplicationDelegate
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        AppearanceManager.apply()
         setupStatusItem()
         setupPopover()
         scheduleDayRefresh()
@@ -67,6 +68,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let controller = CalendarViewController()
         controller.onLanguageChanged = { [weak self] in
             self?.rebuildCalendarPopover()
+        }
+        controller.onAppearanceChanged = { [weak self] in
+            guard let self = self else { return }
+            AppearanceManager.apply()
+            self.statusItem.button?.image = StatusBarIconRenderer.image()
         }
         return controller
     }
