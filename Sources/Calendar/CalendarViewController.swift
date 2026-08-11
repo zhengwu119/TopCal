@@ -526,7 +526,7 @@ class CalendarViewController: NSViewController {
     private func makeDayCell(_ cell: MonthCell) -> NSView {
         let container = DayCellView()
         container.wantsLayer = true
-        container.layer?.cornerRadius = AppConstants.Calendar.dayCellHeight / 2
+        container.layer?.cornerRadius = AppConstants.Calendar.cellCornerRadius
         container.layer?.masksToBounds = true
 
         // Gregorian day number
