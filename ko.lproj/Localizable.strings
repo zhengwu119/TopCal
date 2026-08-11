@@ -2,3 +2,9 @@
 "notification.title" = "TopCal";
 "notification.body" = "메뉴 막대의 날짜를 클릭하여 달력을 확인하세요";
 "month.title.format" = "yyyy년 M월";
+"toolbar.workdays" = "근무일";
+"toolbar.days" = "일수";
+"toolbar.select.start" = "시작 날짜를 선택";
+"toolbar.select.end" = "종료 날짜를 선택";
+"toolbar.result.workdays" = "%@ · 근무일 %d일 / 총 %d일";
+"toolbar.result.days" = "%@ · 총 %d일";

@@ -2,3 +2,9 @@
 "notification.title" = "TopCal";
 "notification.body" = "Click the date in the menu bar to view the calendar";
 "month.title.format" = "MMMM yyyy";
+"toolbar.workdays" = "Workdays";
+"toolbar.days" = "Days";
+"toolbar.select.start" = "Pick the first date";
+"toolbar.select.end" = "Pick the last date";
+"toolbar.result.workdays" = "%@ · %d workdays / %d days total";
+"toolbar.result.days" = "%@ · %d days total";

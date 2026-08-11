@@ -3,6 +3,7 @@ import Foundation
 /// One cell of the month grid. May belong to the previous / current / next month.
 struct MonthCell {
     let day: Int
+    let date: Date              // absolute date of this cell
     let monthOffset: Int   // -1 = previous month, 0 = current, +1 = next
     let isToday: Bool
     let lunarLabel: String?
@@ -85,6 +86,7 @@ struct MonthGrid {
         let isToday = calendar.isDate(cellDate, inSameDayAs: Date())
         let lunarLabel = LunarCalendar.dayLabel(for: cellDate)
         return MonthCell(day: day,
+                         date: cellDate,
                          monthOffset: monthOffset,
                          isToday: isToday,
                          lunarLabel: lunarLabel,

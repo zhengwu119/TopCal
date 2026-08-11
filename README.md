@@ -26,6 +26,11 @@ A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; c
 - 📌 Chinese public holidays and make-up workdays (zh locales only):
   a green dot marks every official holiday, a neutral dot marks the
   weekend workdays scheduled by the State Council (per the annual notice)
+- ◀ ▶ Monthly navigation + « » **year** navigation (SF Symbols chevrons)
+- 🧮 **Day calculator**: two buttons in the toolbar below the grid —
+  *Workdays* and *Days*. Pick any two cells in the popover to get the
+  number of working days (excluding public holidays, including weekend
+  make-up workdays) or total days in that range.
 - 🌍 Localized: English · Simplified Chinese · Traditional Chinese · Japanese · Korean · German · French · Spanish
 - 🚀 Launch at login (via per-user LaunchAgent, no helper app required)
 - 🔔 Optional launch notification to confirm the app is running
@@ -92,6 +97,10 @@ codesign --force --deep --sign - TopCal.app
   months appear dimmed to keep the current month prominent.
 - Chinese public holidays get a green dot; make-up workdays get a neutral
   dot. Regular weekends are left unmarked.
+- Use the « / » chevrons to jump a whole year; ‹ / » switch by month.
+- The bottom toolbar has a *Workdays* button (excludes public holidays,
+  includes weekend make-up workdays) and a *Days* button (inclusive
+  total). Pick two cells in the popover to see the result inline.
 
 ## Uninstall
 

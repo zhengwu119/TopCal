@@ -2,3 +2,9 @@
 "notification.title" = "TopCal";
 "notification.body" = "Cliquez sur la date dans la barre de menus pour afficher le calendrier";
 "month.title.format" = "MMMM yyyy";
+"toolbar.workdays" = "Jours ouvrés";
+"toolbar.days" = "Jours";
+"toolbar.select.start" = "Choisir la date de début";
+"toolbar.select.end" = "Choisir la date de fin";
+"toolbar.result.workdays" = "%@ · %d jours ouvrés / %d jours au total";
+"toolbar.result.days" = "%@ · %d jours au total";

@@ -9,15 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Chinese public holidays & make-up workdays (zh locales)**: a green dot at
-  the bottom of each cell marks official State-Council holidays, and a
-  neutral dot (`labelColor`, adapts to light/dark) marks the weekend
-  workdays scheduled by the annual notice. Regular weekends are unmarked.
-  Data lives in `Sources/Calendar/HolidayCalendar.swift` (edit the
-  `holidaysByYear` / `makeupWorkdaysByYear` maps each January when the
-  new notice is published).
-- Menu-bar icon now renders with a rounded border and (in Chinese locales) the
-  lunar date underneath the day-of-month number
+- **Year navigation chevrons** (« / ») flanking the existing monthly ‹ / »
+  arrows. Built with `NSImage(systemSymbolName:)` so the arrows render as
+  crisp SF Symbol glyphs (`chevron.left.2`, `chevron.right.2`).
+- **Workday / total-day calculator** at the bottom of the popover. Two
+  buttons open a date-range selection mode; clicking two cells computes
+  the result inline:
+  - *Workdays* = non-weekend days minus public holidays, plus weekend
+    make-up workdays (uses `HolidayCalendar`).
+  - *Days* = inclusive total days.
+  The toolbar buttons and result text are localized across all 8 languages.
+  Logic lives in `Sources/Calendar/WorkdayCounter.swift` (pure, tested).
+- CalendarViewController: `DayCellView` carries the cell's absolute date so
+  the click handler can convert a tap into a range selection without
+  re-deriving the date from the grid. `MonthCell` now exposes `date`.
+- Holiday dots get more breathing room: cell height raised to 40 pt with
+  an explicit gap between the lunar label and the dot.
+
+### Changed
+
+- AppConstants.Popover.size → 248×362 (extra width for chevrons; extra
+  height for the calculator toolbar).
 - Per-language README switcher at the top of both READMEs (English /
   简体中文 linked; 日本語 · 한국어 · Deutsch · Français · Español marked
   as translations welcome)
