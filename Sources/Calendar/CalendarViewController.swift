@@ -529,6 +529,13 @@ class CalendarViewController: NSViewController {
         container.layer?.cornerRadius = AppConstants.Calendar.cellCornerRadius
         container.layer?.masksToBounds = true
 
+        // Hover tooltip for holidays / make-up workdays
+        if let tip = HolidayCalendar.holidayTooltip(for: cell.date) {
+            container.toolTip = tip
+        } else if let tip = HolidayCalendar.makeupTooltip(for: cell.date) {
+            container.toolTip = tip
+        }
+
         // Gregorian day number
         let dayLabel = NSTextField(labelWithString: String(cell.day))
         dayLabel.alignment = .center

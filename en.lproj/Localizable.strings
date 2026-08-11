@@ -23,3 +23,5 @@ MIT License © Alex Liu";
 "common.ok" = "OK";
 "common.cancel" = "Cancel";
 "settings.quit" = "Quit TopCal";
+"holiday.tooltip" = "%@ · Public Holiday";
+"makeup.tooltip" = "%@ · Make-up Workday";

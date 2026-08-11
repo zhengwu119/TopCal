@@ -23,3 +23,5 @@ MITライセンス © Alex Liu";
 "common.ok" = "OK";
 "common.cancel" = "キャンセル";
 "settings.quit" = "TopCal を終了";
+"holiday.tooltip" = "%@ · 祝日";
+"makeup.tooltip" = "%@ · 振替出勤";

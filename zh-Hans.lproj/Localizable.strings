@@ -23,3 +23,5 @@ MIT 许可证 © Alex Liu";
 "common.ok" = "好";
 "common.cancel" = "取消";
 "settings.quit" = "退出 TopCal";
+"holiday.tooltip" = "%@ · 放假";
+"makeup.tooltip" = "%@ · 调休上班";

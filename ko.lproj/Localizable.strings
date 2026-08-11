@@ -23,3 +23,5 @@ MIT 라이선스 © Alex Liu";
 "common.ok" = "확인";
 "common.cancel" = "취소";
 "settings.quit" = "TopCal 종료";
+"holiday.tooltip" = "%@ · 공휴일";
+"makeup.tooltip" = "%@ · 대체 근무일";
