@@ -25,16 +25,20 @@ A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; c
   the traditional `初一` … `三十` date and labels the first day of each lunar month
 - 📌 Chinese public holidays and make-up workdays (enabled by default):
   a green dot marks every official holiday, a neutral dot marks the
-  weekend workdays scheduled by the State Council (per the annual notice)
+  weekend workdays scheduled by the State Council (per the annual notice).
+  Hover a marked day to see which holiday it is, e.g.
+  `国庆节 · 放假` or `National Day · Make-up Workday`
 - ◀ ▶ Monthly navigation + « » **year** navigation (SF Symbols chevrons)
 - 🧮 **Day calculator**: two buttons in the toolbar below the grid —
   *Workdays* and *Days*. Pick any two cells in the popover to get the
   number of working days (excluding public holidays, including weekend
   make-up workdays) or total days in that range.
-- ⚙️ **Settings menu** (gear icon, bottom-right): switch the in-app language
-  (English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français ·
-  Español — persisted across launches), check for updates on GitHub,
-  view the About box.
+- ⚙️ **Settings menu** (gear icon, bottom-right):
+  - **Language** — switch the in-app UI language (8 locales, persisted)
+  - **Appearance** — Follow System / Light / Dark theme, applied instantly
+  - **Launch at Login** — toggle (default on)
+  - **Check for Updates** — compares with the latest GitHub release
+  - **About** and **Quit**
 - 🌍 Localized: English · Simplified Chinese · Traditional Chinese · Japanese · Korean · German · French · Spanish
 - 🚀 Launch at login (via per-user LaunchAgent, no helper app required)
 - 🔔 Optional launch notification to confirm the app is running
@@ -103,11 +107,15 @@ codesign --force --deep --sign - TopCal.app
   lunar date (`初一`–`三十`, with month names like `七月` on the 1st). Adjacent
   months appear dimmed to keep the current month prominent.
 - Chinese public holidays get a green dot; make-up workdays get a neutral
-  dot. Regular weekends are left unmarked.
+  dot. Regular weekends are left unmarked. Hover a marked day to see the
+  holiday name and whether it's a day off or a make-up workday.
 - Use the « / » chevrons to jump a whole year; ‹ / » switch by month.
 - The bottom toolbar has a *Workdays* button (excludes public holidays,
   includes weekend make-up workdays) and a *Days* button (inclusive
   total). Pick two cells in the popover to see the result inline.
+- The gear menu lets you switch the UI language, pick a Light / Dark /
+  Follow-System appearance, toggle launch-at-login, check for updates,
+  and quit.
 
 ## Uninstall
 
