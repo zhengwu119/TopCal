@@ -17,10 +17,18 @@ enum LunarCalendar {
     ]
 
     /// Whether lunar dates should be shown (Chinese-locale environments only).
+    ///
+    /// Honors `LocaleProvider.forcedLocale` (set by `scripts/render/main.swift`)
+    /// and a `LunarForceShow` UserDefaults flag — both are unused by the app.
     static func shouldShow() -> Bool {
-        guard let code = Locale.current.language.languageCode?.identifier else { return false }
-        return code.hasPrefix("zh")
+        if UserDefaults.standard.object(forKey: lunarForceShowKey) != nil {
+            return UserDefaults.standard.bool(forKey: lunarForceShowKey)
+        }
+        let code = LocaleProvider.locale.language.languageCode?.identifier
+        return code?.hasPrefix("zh") ?? false
     }
+
+    static let lunarForceShowKey = "LunarForceShow"
 
     /// Lunar month/day components for the given Gregorian date.
     static func components(for date: Date) -> (month: Int, day: Int)? {

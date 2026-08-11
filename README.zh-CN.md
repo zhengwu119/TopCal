@@ -4,6 +4,8 @@
   <img src="icon.png" width="128" alt="TopCal icon">
 </div>
 
+🌐 **语言：** 🇺🇸 [English](README.md) · 🇨🇳 [简体中文](README.zh-CN.md) · 🇯🇵 日本語 · 🇰🇷 한국어 · 🇩🇪 Deutsch · 🇫🇷 Français · 🇪🇸 Español &nbsp;_（欢迎贡献翻译 — 见 [参与贡献](#参与贡献)）_
+
 一个极简的 macOS 顶部菜单栏日历：菜单栏显示今天的日期，点击弹出当月日历，支持月份/年份切换。
 
 ![macOS](https://img.shields.io/badge/macOS-13.0+-blue) ![Swift](https://img.shields.io/badge/Swift-5.9+-orange) ![License](https://img.shields.io/badge/License-MIT-green)
@@ -125,14 +127,20 @@ rm -rf /Applications/TopCal.app
 ├── docs/                                # 各语言 README 截图
 │   ├── en/                              #   英文（无农历）
 │   │   ├── screenshot-menu.png
-│   │   └── screenshot-popover.png
+│   │   ├── screenshot-popover.png       #    ← 真实 AppKit 渲染
+│   │   └── menubar-icon.png             #    ← 真实 AppKit 渲染
 │   └── zh-Hans/                         #   简体中文（含农历）
 │       ├── screenshot-menu.png
-│       └── screenshot-popover.png
+│       ├── screenshot-popover.png       #    ← 真实 AppKit 渲染
+│       └── menubar-icon.png             #    ← 真实 AppKit 渲染
 ├── Info.plist                           # Bundle 配置（LSUIElement、本地化、图标）
 ├── scripts/
 │   ├── make_icon.py                     # 从 icon.png 重新生成 AppIcon.icns
-│   └── make_screenshots.py              # 重新生成 README 截图
+│   ├── make_screenshots.py              # 用真实图标合成菜单栏图
+│   └── render/                          # 离屏 AppKit 渲染工具（详见 build.sh）
+│       ├── main.swift
+│       ├── Info.plist
+│       └── build.sh
 ├── build.sh                             # 本地一键构建
 ├── .github/workflows/
 │   ├── build.yml                        # CI：编译 + 签名校验

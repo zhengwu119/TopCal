@@ -29,7 +29,7 @@ struct MonthGrid {
     /// Builds a grid for the given month. Returns nil if the date is invalid.
     static func make(for date: Date,
                      today: Date = Date(),
-                     calendar: Calendar = .current) -> MonthGrid? {
+                     calendar: Calendar = LocaleProvider.calendar) -> MonthGrid? {
         let todayParts = calendar.dateComponents([.year, .month], from: today)
         let shownParts = calendar.dateComponents([.year, .month], from: date)
         let isCurrent = todayParts.year == shownParts.year && todayParts.month == shownParts.month
@@ -89,16 +89,17 @@ struct MonthGrid {
     /// Localized title for the month header (e.g. "2026年8月" / "August 2026").
     var formattedTitle: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
-        formatter.dateFormat = NSLocalizedString("month.title.format",
-                                                 comment: "Month/year title format for the calendar header")
+        formatter.locale = LocaleProvider.locale
+        formatter.dateFormat = LocaleProvider.forcedDateFormat ?? NSLocalizedString(
+            "month.title.format",
+            comment: "Month/year title format for the calendar header")
         return formatter.string(from: date)
     }
 
     /// Localized very-short weekday abbreviations, aligned to the calendar's
     /// first weekday (e.g. ["S","M","T","W","T","F","S"] on en-US, ["日","一","二"...] on zh).
     static func weekdaySymbols() -> [String] {
-        let calendar = Calendar.current
+        let calendar = LocaleProvider.calendar
         var symbols = calendar.veryShortStandaloneWeekdaySymbols
         let first = calendar.firstWeekday - 1  // 0-based
         if first > 0 && first < symbols.count {

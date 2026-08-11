@@ -4,6 +4,8 @@
   <img src="icon.png" width="128" alt="TopCal icon">
 </div>
 
+🌐 **Languages:** 🇺🇸 [English](README.md) · 🇨🇳 [简体中文](README.zh-CN.md) · 🇯🇵 日本語 · 🇰🇷 한국어 · 🇩🇪 Deutsch · 🇫🇷 Français · 🇪🇸 Español &nbsp;_(translations welcome — see [CONTRIBUTING](#contributing))_
+
 A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; click it to view a popover calendar with month/year navigation.
 
 ![macOS](https://img.shields.io/badge/macOS-13.0+-blue) ![Swift](https://img.shields.io/badge/Swift-5.9+-orange) ![License](https://img.shields.io/badge/License-MIT-green)
@@ -138,14 +140,20 @@ rm -rf /Applications/TopCal.app
 ├── docs/                                # Per-locale README screenshots
 │   ├── en/                              #   English (no lunar overlay)
 │   │   ├── screenshot-menu.png
-│   │   └── screenshot-popover.png
+│   │   ├── screenshot-popover.png       #    ← real AppKit render
+│   │   └── menubar-icon.png             #    ← real AppKit render
 │   └── zh-Hans/                         #   Simplified Chinese (with lunar dates)
 │       ├── screenshot-menu.png
-│       └── screenshot-popover.png
+│       ├── screenshot-popover.png       #    ← real AppKit render
+│       └── menubar-icon.png             #    ← real AppKit render
 ├── Info.plist                           # Bundle config (LSUIElement, localizations, icon)
 ├── scripts/
 │   ├── make_icon.py                     # Regenerate AppIcon.icns from icon.png
-│   └── make_screenshots.py              # Regenerate README screenshots
+│   ├── make_screenshots.py              # Compose menu-bar composite using the real icon
+│   └── render/                          # Off-screen AppKit renderer (see build.sh)
+│       ├── main.swift
+│       ├── Info.plist
+│       └── build.sh
 ├── build.sh                             # One-command local build
 ├── .github/workflows/
 │   ├── build.yml                        # CI: compile + signature verification

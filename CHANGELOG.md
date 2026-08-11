@@ -9,7 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- Menu-bar icon now renders with a rounded border and (in Chinese locales) the
+  lunar date underneath the day-of-month number
+- Per-language README switcher at the top of both READMEs (English /
+  简体中文 linked; 日本語 · 한국어 · Deutsch · Français · Español marked
+  as translations welcome)
+- **Real AppKit-rendered README screenshots**: a new `scripts/render/`
+  tool instantiates the real `CalendarViewController` and
+  `StatusBarIconRenderer` and exports PNG via `cacheDisplay`, so the
+  popover images show actual layout, fonts, and lunar dates (not hand-drawn
+  mockups). A small `LocaleProvider` hook in the app exposes `forcedLocale`
+  / `forcedDateFormat` so the renderer can force a locale without touching
+  global preferences.
+- Menu-bar screenshots now embed the real AppKit-rendered icon (instead of
+  a hand-drawn red pill). The popover is fully real; only the menu-bar
+  background is synthesised because `NSStatusBar` requires a live GUI session.
 
 ## [1.1.0] - 2026-08-11
 

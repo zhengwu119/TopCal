@@ -9,9 +9,11 @@ enum AppConstants {
     }
 
     enum StatusIcon {
-        static let imageSize = NSSize(width: 28, height: 22)
-        static let fontSize: CGFloat = 13
-        static let leftInset: CGFloat = 4
+        static let imageSize = NSSize(width: 30, height: 24)
+        static let fontSize: CGFloat = 12
+        static let lunarFontSize: CGFloat = 8
+        static let cornerRadius: CGFloat = 3
+        static let borderWidth: CGFloat = 1
     }
 
     enum Calendar {
