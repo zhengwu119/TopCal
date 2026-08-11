@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 import os.log
 
-private let log = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.topcal.app",
+private let log = OSLog(subsystem: Bundle.main.bundleIdentifier ?? AppConstants.fallbackBundleIdentifier,
                         category: "launch-at-login")
 
 /// Registers the app as a login item by installing a per-user LaunchAgent.
@@ -15,7 +15,7 @@ final class LaunchAtLoginManager {
     private init() {}
 
     private var launchAgentIdentifier: String {
-        Bundle.main.bundleIdentifier ?? "com.topcal.app"
+        Bundle.main.bundleIdentifier ?? AppConstants.fallbackBundleIdentifier
     }
 
     private var launchAgentDirectory: URL {
@@ -31,8 +31,8 @@ final class LaunchAtLoginManager {
         FileManager.default.fileExists(atPath: launchAgentFile.path)
     }
 
-    /// Installs the LaunchAgent and loads it with launchctl.
-    /// Safe to call multiple times — no-op if already registered.
+    /// Installs the LaunchAgent and loads it with launchctl. Safe to call
+    /// multiple times — no-op if already registered.
     func register() {
         if isEnabled { return }
 
@@ -45,7 +45,7 @@ final class LaunchAtLoginManager {
                 "ProgramArguments": [Bundle.main.bundlePath],
                 "RunAtLoad": true,
                 "KeepAlive": false,
-                "StandardOutPath": "/dev/null",
+                "StandardOutputPath": "/dev/null",
                 "StandardErrorPath": "/dev/null"
             ]
             let data = try PropertyListSerialization.data(fromPropertyList: plist,
@@ -53,20 +53,7 @@ final class LaunchAtLoginManager {
                                                           options: 0)
             try data.write(to: launchAgentFile)
 
-            let task = Process()
-            task.launchPath = "/bin/launchctl"
-            // `bootstrap` is the modern API (macOS 11+); `load` is deprecated.
-            task.arguments = ["bootstrap", "gui/\(getuid())", launchAgentFile.path]
-            task.standardOutput = FileHandle.nullDevice
-            task.standardError = FileHandle.nullDevice
-            try task.run()
-            task.waitUntilExit()
-
-            // Non-zero usually means the agent is already loaded — harmless.
-            if task.terminationStatus != 0 {
-                os_log("launchctl bootstrap returned %d (agent may already be loaded)",
-                       log: log, type: .info, task.terminationStatus)
-            }
+            try runLaunchctl(arguments: ["bootstrap", "gui/\(getuid())", launchAgentFile.path])
         } catch {
             os_log("Failed to register launch agent: %@", log: log, type: .error,
                    error.localizedDescription)
@@ -76,13 +63,23 @@ final class LaunchAtLoginManager {
     /// Removes the LaunchAgent plist and unloads it.
     func unregister() {
         guard isEnabled else { return }
+        try? runLaunchctl(arguments: ["bootout", "gui/\(getuid())", launchAgentFile.path])
+        try? FileManager.default.removeItem(at: launchAgentFile)
+    }
 
+    /// Runs /bin/launchctl with the given arguments, silencing its output.
+    /// Non-zero exit status is logged as info) since "already loaded" is harmless.
+    private func runLaunchctl(arguments: [String]) throws {
         let task = Process()
         task.launchPath = "/bin/launchctl"
-        task.arguments = ["bootout", "gui/\(getuid())", launchAgentFile.path]
-        try? task.run()
+        task.arguments = arguments
+        task.standardOutput = FileHandle.nullDevice
+        task.standardError = FileHandle.nullDevice
+        try task.run()
         task.waitUntilExit()
-
-        try? FileManager.default.removeItem(at: launchAgentFile)
+        if task.terminationStatus != 0 {
+            os_log("launchctl %{public}@ exited %d (likely harmless if already loaded)",
+                   log: log, type: .info, arguments.first ?? "?", task.terminationStatus)
+        }
     }
 }

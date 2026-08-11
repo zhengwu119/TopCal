@@ -1,5 +1,7 @@
 # TopCal · 顶历
 
+![TopCal](icon.png)
+
 一个极简的 macOS 顶部菜单栏日历：菜单栏显示今天的日期，点击弹出当月日历，支持月份/年份切换。
 
 ![macOS](https://img.shields.io/badge/macOS-13.0+-blue) ![Swift](https://img.shields.io/badge/Swift-5.9+-orange) ![License](https://img.shields.io/badge/License-MIT-green)
@@ -29,16 +31,18 @@
 
 ### macOS Gatekeeper（"无法验证是否包含恶意软件"）
 
-TopCal 使用 **ad-hoc 签名**（无付费 Apple Developer ID），macOS 首次打开时可能拦截。免费开源应用都会遇到，正常现象。任选一种方式解决：
+TopCal 使用 **ad-hoc 签名**（无付费 Apple Developer ID），macOS 首次打开时可能拦截。免费开源应用都会遇到，正常现象。最可靠的方法：
 
+```bash
+# 1. 先把 App 拖入"应用程序"文件夹，再移除隔离标记：
+xattr -dr com.apple.quarantine /Applications/TopCal.app
+# 2. 启动：
+open /Applications/TopCal.app
+```
+
+如果仍被拦截：
 - **右键**应用 → **打开** → 在弹出的对话框再次点 **打开**；或
-- 在终端移除隔离属性：
-
-  ```bash
-  xattr -dr com.apple.quarantine /Applications/TopCal.app
-  ```
-
-- 仍被拦截：**系统设置 → 隐私与安全性 → 安全性** → 点 **仍要打开**。
+- **系统设置 → 隐私与安全性 → 安全性** → 点 **仍要打开**。
 
 ## 从源码构建
 
@@ -90,14 +94,28 @@ rm -rf /Applications/TopCal.app
 ## 项目结构
 
 ```
-├── main.swift                    # 显式应用入口
-├── AppDelegate.swift             # 菜单栏图标、弹窗、通知
-├── CalendarViewController.swift  # 日历网格 UI + 月份切换
-├── LaunchAtLoginManager.swift    # 开机自启的安装/移除
-├── Info.plist                    # 应用配置（LSUIElement = 菜单栏应用）
-├── *.lproj/                      # 多语言资源（8 种语言）
-├── build.sh                      # 一键构建脚本
-└── .github/workflows/build.yml   # CI：编译并校验签名
+├── Sources/
+│   ├── main.swift                      # 显式应用入口（不使用 @main）
+│   ├── AppDelegate.swift               # 薄装配层：状态栏 + 弹窗 + 定时器
+│   ├── AppConstants.swift              # 所有可调参数集中一处
+│   ├── Calendar/
+│   │   ├── CalendarViewController.swift  # 弹窗 UI + 月份切换
+│   │   └── MonthGrid.swift              # 纯数据模型（可独立测试）
+│   ├── LaunchAtLogin/
+│   │   └── LaunchAtLoginManager.swift   # LaunchAgent 安装/移除
+│   ├── Notifications/
+│   │   └── NotificationManager.swift    # UserNotifications 封装
+│   └── Support/
+│       └── StatusBarIconRenderer.swift  # 把日期数字画成 NSImage
+├── *.lproj/                             # 多语言资源（8 种语言）
+├── AppIcon.icns / icon.png              # 应用图标（scripts/make_icon.py 生成）
+├── Info.plist                           # Bundle 配置（LSUIElement、本地化、图标）
+├── scripts/make_icon.py                 # 从 icon.png 重新生成 AppIcon.icns
+├── build.sh                             # 本地一键构建
+├── .github/workflows/
+│   ├── build.yml                        # CI：编译 + 签名校验
+│   └── release.yml                      # CI：tag → 通用版构建 → GitHub Release
+├── LICENSE、README.md、README.zh-CN.md、CHANGELOG.md
 ```
 
 ## 参与贡献

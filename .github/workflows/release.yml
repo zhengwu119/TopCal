@@ -24,7 +24,7 @@ jobs:
           swiftc -target arm64-apple-macos13.0 \
             -o build-arm64/TopCal \
             -framework AppKit -framework Foundation -framework UserNotifications \
-            main.swift AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+            $(find Sources -name "*.swift" | sort)
 
       - name: Build x86_64 binary
         run: |
@@ -32,7 +32,7 @@ jobs:
           swiftc -target x86_64-apple-macos13.0 \
             -o build-x86_64/TopCal \
             -framework AppKit -framework Foundation -framework UserNotifications \
-            main.swift AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+            $(find Sources -name "*.swift" | sort)
 
       - name: Assemble universal app bundle and zip
         run: |
@@ -41,6 +41,7 @@ jobs:
             build-arm64/TopCal build-x86_64/TopCal
           file TopCal.app/Contents/MacOS/TopCal
           cp Info.plist TopCal.app/Contents/Info.plist
+          cp AppIcon.icns TopCal.app/Contents/Resources/AppIcon.icns
           for lproj in *.lproj; do cp -R "$lproj" TopCal.app/Contents/Resources/; done
           codesign --force --deep --sign - TopCal.app
           codesign --verify TopCal.app

@@ -5,6 +5,7 @@
 build/
 *.app/
 *.zip
+AppIcon.iconset/
 
 # Xcode / SwiftPM
 .build/

@@ -6,6 +6,8 @@
     <string>TopCal</string>
     <key>CFBundleExecutable</key>
     <string>TopCal</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>com.topcal.app</string>
     <key>CFBundleInfoDictionaryVersion</key>
