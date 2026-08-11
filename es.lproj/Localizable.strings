@@ -25,3 +25,4 @@ Licencia MIT © Alex Liu";
 "settings.quit" = "Salir de TopCal";
 "holiday.tooltip" = "%@ · Día festivo";
 "makeup.tooltip" = "%@ · Día de compensación";
+"settings.launchAtLogin" = "Iniciar al iniciar sesión";

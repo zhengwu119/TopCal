@@ -25,3 +25,4 @@ MIT License © Alex Liu";
 "settings.quit" = "Quit TopCal";
 "holiday.tooltip" = "%@ · Public Holiday";
 "makeup.tooltip" = "%@ · Make-up Workday";
+"settings.launchAtLogin" = "Launch at Login";

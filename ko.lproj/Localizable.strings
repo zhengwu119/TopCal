@@ -25,3 +25,4 @@ MIT 라이선스 © Alex Liu";
 "settings.quit" = "TopCal 종료";
 "holiday.tooltip" = "%@ · 공휴일";
 "makeup.tooltip" = "%@ · 대체 근무일";
+"settings.launchAtLogin" = "로그인 시 실행";

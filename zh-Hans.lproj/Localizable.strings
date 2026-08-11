@@ -25,3 +25,4 @@ MIT 许可证 © Alex Liu";
 "settings.quit" = "退出 TopCal";
 "holiday.tooltip" = "%@ · 放假";
 "makeup.tooltip" = "%@ · 调休上班";
+"settings.launchAtLogin" = "开机启动";

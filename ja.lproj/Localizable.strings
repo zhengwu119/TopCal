@@ -25,3 +25,4 @@ MITライセンス © Alex Liu";
 "settings.quit" = "TopCal を終了";
 "holiday.tooltip" = "%@ · 祝日";
 "makeup.tooltip" = "%@ · 振替出勤";
+"settings.launchAtLogin" = "ログイン時に起動";

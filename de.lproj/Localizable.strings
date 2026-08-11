@@ -25,3 +25,4 @@ MIT-Lizenz © Alex Liu";
 "settings.quit" = "TopCal beenden";
 "holiday.tooltip" = "%@ · Feiertag";
 "makeup.tooltip" = "%@ · Nacharbeitstag";
+"settings.launchAtLogin" = "Beim Anmelden starten";

@@ -266,6 +266,15 @@ class CalendarViewController: NSViewController {
 
         menu.addItem(.separator())
 
+        // Launch at login toggle
+        let launchItem = makeMenuItem(
+            LocaleProvider.localizedString("settings.launchAtLogin", fallback: "Launch at Login"),
+            action: #selector(toggleLaunchAtLogin))
+        launchItem.state = LaunchAtLoginManager.shared.isEnabled ? .on : .off
+        menu.addItem(launchItem)
+
+        menu.addItem(.separator())
+
         menu.addItem(makeMenuItem(
             LocaleProvider.localizedString("settings.checkUpdates", fallback: "Check for Updates…"),
             action: #selector(checkForUpdates)))
@@ -284,6 +293,22 @@ class CalendarViewController: NSViewController {
     @objc private func quitApp() {
         NSApp.terminate(nil)
     }
+
+    @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
+        let manager = LaunchAtLoginManager.shared
+        let enabled = manager.isEnabled
+        if enabled {
+            manager.unregister()
+        } else {
+            manager.register()
+        }
+        UserDefaults.standard.set(!enabled, forKey: Self.launchAtLoginPreferenceKey)
+        sender.state = enabled ? .off : .on
+    }
+
+    /// Preference key recording the user's launch-at-login choice so the app
+    /// doesn't re-register itself after they turn it off.
+    static let launchAtLoginPreferenceKey = "LaunchAtLogin"
 
     private func makeMenuItem(_ title: String, action: Selector) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: "")

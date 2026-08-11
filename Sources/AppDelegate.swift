@@ -20,8 +20,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupStatusItem()
         setupPopover()
         scheduleDayRefresh()
-        LaunchAtLoginManager.shared.register()
+        applyLaunchAtLoginPreference()
         NotificationManager.shared.requestPermissionAndNotifyLaunch()
+    }
+
+    /// Respects the user's launch-at-login choice (defaults to on for
+    /// backwards compatibility with v1.0–v1.2 behaviour). Without this the
+    /// app would re-register itself after the user turns the setting off.
+    private func applyLaunchAtLoginPreference() {
+        let pref = UserDefaults.standard
+            .object(forKey: CalendarViewController.launchAtLoginPreferenceKey) as? Bool ?? true
+        let manager = LaunchAtLoginManager.shared
+        if pref {
+            manager.register()
+        } else {
+            manager.unregister()
+        }
     }
 
     // MARK: - Setup
