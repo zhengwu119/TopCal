@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet.
 
+## [1.4.2] - 2026-08-11
+
+### Fixed
+
+- **Background (and cell/dot/highlight layers) did not follow the window
+  appearance**: `layer.backgroundColor = color.cgColor` snapshots the color
+  at creation time, so after switching theme only the dynamic text colors
+  changed while the background stayed stale (white-on-white or
+  black-on-dark). New `CalendarRootView` and a stateful `DayCellView` now
+  override `viewDidChangeEffectiveAppearance()` to re-resolve their layer
+  colors. Verified with an automated aqua → darkAqua → aqua render test.
+
 ## [1.4.1] - 2026-08-11
 
 ### Fixed
