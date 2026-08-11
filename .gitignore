@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Build artifacts
+MenuBarCalendar.app/
+*.zip
+
+# Xcode / SwiftPM
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
