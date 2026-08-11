@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet.
 
+## [1.3.0] - 2026-08-11
+
+### Added
+
+- **Hover tooltips on holiday / make-up workday cells**: hovering a green dot
+  shows e.g. `国庆节 · 放假` (zh) / `National Day · Public Holiday` (en);
+  hovering a neutral dot shows `国庆节 · 调休上班` / `National Day ·
+  Make-up Workday`. Holiday names come from `HolidayCalendar` (Chinese
+  names + English equivalents) and the templates are localized in all 8
+  languages.
+
+### Fixed
+
+- Today's highlighted cell rendered as a stretched **oval** because the
+  corner radius was half the row height (20pt) while the cell is only
+  ~31pt wide. Now uses a fixed 8pt radius (`cellCornerRadius`) → a clean
+  rounded rectangle; the selection border follows the same radius.
+
 ## [1.2.0] - 2026-08-11
 
 ### Added
