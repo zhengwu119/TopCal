@@ -63,8 +63,9 @@ first launch. This is normal for free open-source apps. Remove the quarantine
 flag in Terminal and it will open normally:
 
 ```bash
-# 1. Move the app into /Applications first, then remove the quarantine flag:
-xattr -dr com.apple.quarantine /Applications/TopCal.app
+# 1. Move the app into /Applications first, then remove the quarantine flag
+#    (sudo is needed because /Applications is not writable by regular users):
+sudo xattr -dr com.apple.quarantine /Applications/TopCal.app
 # 2. Launch it:
 open /Applications/TopCal.app
 ```

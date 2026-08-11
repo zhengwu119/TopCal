@@ -60,8 +60,9 @@
 TopCal 使用 **ad-hoc 签名**（无付费 Apple Developer ID），macOS 首次打开时可能拦截。免费开源应用都会遇到，正常现象。在终端执行以下命令即可正常打开：
 
 ```bash
-# 1. 先把 App 拖入"应用程序"文件夹，再移除隔离标记：
-xattr -dr com.apple.quarantine /Applications/TopCal.app
+# 1. 先把 App 拖入"应用程序"文件夹，再移除隔离标记
+#    （/Applications 目录普通用户无写权限，需要 sudo）：
+sudo xattr -dr com.apple.quarantine /Applications/TopCal.app
 # 2. 启动：
 open /Applications/TopCal.app
 ```
