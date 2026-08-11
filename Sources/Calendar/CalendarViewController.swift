@@ -250,14 +250,18 @@ class CalendarViewController: NSViewController {
 
     private func buildSettingsMenu() -> NSMenu {
         let menu = NSMenu()
+        // Keep the popup menu in the same appearance as the app (otherwise it
+        // follows the system menu-bar theme).
+        menu.appearance = AppearanceManager.appearance
 
         // Language submenu
         let languageItem = NSMenuItem(
             title: LocaleProvider.localizedString("settings.language", fallback: "Language"),
             action: nil, keyEquivalent: "")
         let languageMenu = NSMenu()
+        languageMenu.appearance = AppearanceManager.appearance
         for language in LocaleProvider.supportedLanguages {
-            let item = NSMenuItem(title: language.displayName,
+            let item = NSMenuItem(title: LocaleProvider.displayName(for: language.code),
                                   action: #selector(languageSelected(_:)),
                                   keyEquivalent: "")
             item.target = self
@@ -273,6 +277,7 @@ class CalendarViewController: NSViewController {
             title: LocaleProvider.localizedString("settings.appearance", fallback: "Appearance"),
             action: nil, keyEquivalent: "")
         let appearanceMenu = NSMenu()
+        appearanceMenu.appearance = AppearanceManager.appearance
         let appearanceModes: [(mode: AppearanceManager.Mode, key: String, fallback: String)] = [
             (.system, "settings.appearance.system", "Follow System"),
             (.light, "settings.appearance.light", "Light"),

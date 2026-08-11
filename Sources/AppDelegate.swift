@@ -86,8 +86,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         calendarViewController = makeCalendarController()
         popover.contentViewController = calendarViewController
         if popover.isShown {
-            popover.contentSize = AppConstants.Popover.size
-            popover.contentViewController = calendarViewController
+            // Force the (already visible) popover window to the app's
+            // appearance so freshly-created layer colors match dynamic ones.
+            _ = calendarViewController.view
+            if let window = calendarViewController.view.window {
+                window.appearance = AppearanceManager.appearance
+            }
         }
     }
 
@@ -113,5 +117,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let button = statusItem.button else { return }
         calendarViewController.refresh()
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        // Force the popover window to use the app's appearance so dynamic
+        // colors (text, cells) and static layer colors resolve consistently.
+        if let window = popover.contentViewController?.view.window {
+            window.appearance = AppearanceManager.appearance
+        }
     }
 }

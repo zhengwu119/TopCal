@@ -46,6 +46,27 @@ enum LocaleProvider {
         userLanguage ?? systemLanguageCode
     }
 
+    /// Display name for a language code: native names when the UI is not
+    /// Chinese (English, 日本語, …), Chinese names when it is
+    /// (英语, 日语, …).
+    static func displayName(for code: String) -> String {
+        if isChinese {
+            return chineseLanguageNames[code] ?? code
+        }
+        return supportedLanguages.first { $0.code == code }?.displayName ?? code
+    }
+
+    private static let chineseLanguageNames: [String: String] = [
+        "en": "英语",
+        "zh-Hans": "简体中文",
+        "zh-Hant": "繁體中文",
+        "ja": "日语",
+        "ko": "韩语",
+        "de": "德语",
+        "fr": "法语",
+        "es": "西班牙语"
+    ]
+
     /// "zh" prefix from the system (or user) language, used to default the
     /// month-title format and some UI strings.
     static var isChinese: Bool {

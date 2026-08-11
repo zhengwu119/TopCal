@@ -20,6 +20,11 @@ enum AppearanceManager {
         return Mode(rawValue: raw) ?? .system
     }
 
+    /// The appearance currently applied to the app (nil = follow system).
+    static var appearance: NSAppearance? {
+        NSApp.appearance
+    }
+
     /// Applies the stored appearance to the running app.
     static func apply() {
         switch current {
