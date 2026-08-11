@@ -16,7 +16,7 @@ jobs:
         run: swift --version
 
       - name: Build app
-        run: ./build.sh
+        run: ./build.sh build
 
       - name: Verify app bundle
         run: |
