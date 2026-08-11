@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet.
 
+## [1.4.0] - 2026-08-11
+
+### Added
+
+- **Launch-at-login toggle** in the settings menu: checkmark reflects whether
+  the LaunchAgent is installed; clicking installs/removes it via
+  `LaunchAtLoginManager` and persists the choice in `UserDefaults`
+  (`LaunchAtLogin`, default on). `AppDelegate` now respects the preference at
+  startup so turning it off stays off across launches.
+- **Appearance switcher** in the settings menu (`AppearanceManager`):
+  Follow System (default) / Light / Dark, persisted in `UserDefaults`
+  (`Appearance`) and applied instantly via `NSApp.appearance`; the
+  menu-bar icon is re-rendered so its dynamic colors follow the theme.
+- Settings strings localized across all 8 languages
+  (`settings.launchAtLogin`, `settings.appearance.*`).
+
 ## [1.3.0] - 2026-08-11
 
 ### Added
