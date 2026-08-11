@@ -11,6 +11,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet.
 
+## [1.4.1] - 2026-08-11
+
+### Fixed
+
+- **White-on-white after switching to light theme**: the popover window kept
+  its own (system) appearance, so dynamic colors resolved to dark while
+  static layer backgrounds resolved to light. `showPopover()` and
+  `rebuildCalendarPopover()` now force `window.appearance` to match the app.
+- **Settings menu stayed dark**: NSMenu popups follow the system menu-bar
+  theme by default; the settings menu and its submenus now set
+  `menu.appearance = NSApp.appearance`.
+- **Launch-at-login never started the app**: `ProgramArguments` pointed at
+  `Bundle.main.bundlePath` (the .app directory, which launchd cannot
+  execute); now uses `Bundle.main.executablePath`. `register()` also
+  rewrites the plist when it points at a stale install path instead of
+  silently returning.
+
+### Changed
+
+- **Chinese UI shows Chinese language names** in the Language submenu
+  (英语 · 日本語 → 日语 · Deutsch → 德语 …) via `LocaleProvider.displayName(for:)`.
+- Today-highlight corner radius tightened 8 → 6 pt.
+
 ## [1.4.0] - 2026-08-11
 
 ### Added
