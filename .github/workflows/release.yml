@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "TAG=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build arm64 binary
+        run: |
+          mkdir -p build-arm64
+          swiftc -target arm64-apple-macos13.0 \
+            -o build-arm64/TopCal \
+            -framework AppKit -framework Foundation -framework UserNotifications \
+            main.swift AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+
+      - name: Build x86_64 binary
+        run: |
+          mkdir -p build-x86_64
+          swiftc -target x86_64-apple-macos13.0 \
+            -o build-x86_64/TopCal \
+            -framework AppKit -framework Foundation -framework UserNotifications \
+            main.swift AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+
+      - name: Assemble universal app bundle and zip
+        run: |
+          mkdir -p TopCal.app/Contents/MacOS TopCal.app/Contents/Resources
+          lipo -create -output TopCal.app/Contents/MacOS/TopCal \
+            build-arm64/TopCal build-x86_64/TopCal
+          file TopCal.app/Contents/MacOS/TopCal
+          cp Info.plist TopCal.app/Contents/Info.plist
+          for lproj in *.lproj; do cp -R "$lproj" TopCal.app/Contents/Resources/; done
+          codesign --force --deep --sign - TopCal.app
+          codesign --verify TopCal.app
+          ditto -c -k --sequesterRsrc --keepParent TopCal.app \
+            "TopCal-${{ steps.version.outputs.TAG }}-macos-universal.zip"
+          ls -la
+
+      - name: Create GitHub Release with auto-generated changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "TopCal-${{ steps.version.outputs.TAG }}-macos-universal.zip" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "TopCal ${{ steps.version.outputs.TAG }} (顶历)" \
+            --notes-file CHANGELOG.md \
+            --generate-notes
