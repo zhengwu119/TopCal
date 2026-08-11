@@ -56,6 +56,6 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             "TopCal-${{ steps.version.outputs.TAG }}-macos-universal.zip" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "TopCal ${{ steps.version.outputs.TAG }} (顶历)" \
+            --title "TopCal ${{ steps.version.outputs.TAG }}" \
             --notes-file CHANGELOG.md \
             --generate-notes
