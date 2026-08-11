@@ -2,7 +2,8 @@
 .DS_Store
 
 # Build artifacts
-MenuBarCalendar.app/
+build/
+*.app/
 *.zip
 
 # Xcode / SwiftPM

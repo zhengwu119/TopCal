@@ -1,11 +1,11 @@
 import AppKit
 import Foundation
 
-// MARK: - main.swift (explicit entry point, NOT @main)
-// On macOS 26 / Swift 6.2, @main silently fails to invoke applicationDidFinishLaunching.
-// We use explicit top-level code instead, which is proven to work.
-
-print("[MC] Launching...")
+// NOTE: We deliberately avoid the `@main` attribute here.
+// On macOS 26 / Swift 6.2, `@main` on an NSApplicationDelegate subclass
+// silently fails to invoke `applicationDidFinishLaunching` (the process
+// is killed before the delegate is wired up). Explicit top-level code
+// that creates the NSApplication manually is reliable on all versions.
 
 let appDelegate = AppDelegate()
 let app = NSApplication.shared

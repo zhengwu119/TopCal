@@ -1,64 +1,99 @@
-# MenuBarCalendar v3
+# MenuBarCalendar
 
-极简 macOS 顶部菜单栏日历。
+A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; click it to view a popover calendar with month/year navigation.
 
-## 功能
+![macOS](https://img.shields.io/badge/macOS-13.0+-blue) ![Swift](https://img.shields.io/badge/Swift-5.9+-orange) ![License](https://img.shields.io/badge/License-MIT-green)
 
-- 顶部菜单栏显示今天是几号
-- 点击日期弹出当月日历，当天高亮
-- 开机自启（LaunchAgent）
-- 启动通知 + 终端调试日志
+## Features
 
-## 覆盖安装前必做
+- 📅 Current day-of-month shown in the menu bar (e.g. `25`)
+- 🗓 Click to open a popover calendar — current day is highlighted
+- ◀ ▶ Month/year navigation inside the popover
+- 🚀 Launch at login (via per-user LaunchAgent, no helper app required)
+- 🔔 Optional launch notification to confirm the app is running
+- ⚡ Native AppKit, no dependencies, no sandbox account needed
 
-```bash
-# 杀掉所有旧实例
-pkill -f MenuBarCalendar
-# 确认不再运行
-ps aux | grep -i MenuBarCalendar | grep -v grep
-```
+## Requirements
 
-## 安装与使用
+- macOS 13.0 or later (arm64 / x86_64)
+- Xcode Command Line Tools (`xcode-select --install`) to build from source
 
-1. 解压 zip，将 `MenuBarCalendar.app` 拖入 **应用程序** 覆盖旧版
-2. 打开"终端"，运行（观察调试日志）：
+## Installation
 
-   ```bash
-   /Applications/MenuBarCalendar.app/Contents/MacOS/MenuBarCalendar
-   ```
+Download the latest `.app` from [Releases](../../releases) and drag it into your **Applications** folder, then launch it.
 
-   预期输出类似：
+> First launch: the app registers itself as a login item and may ask for
+> notification permission — these are optional and can be denied.
 
-   ```
-   [MenuBarCalendar] Starting up...
-   [MenuBarCalendar] macOS Version 26.0 ...
-   [MenuBarCalendar] StatusItem created, length=32.0, button=OK
-   [MenuBarCalendar] Button configured, now setting image...
-   [MenuBarCalendar] Updated to day: 25
-   [MenuBarCalendar] LaunchAgent registered.
-   [MenuBarCalendar] Ready — should see date in menu bar.
-   ```
-
-3. 观察：
-   - 终端有日志 = 应用正常运行
-   - 收到"日历已就绪"通知 = 通知权限 OK
-   - 菜单栏出现日期数字 = 一切正常
-4. 如果日志正常但菜单栏仍无图标：这可能意味着该 macOS 版本隐藏了新增的菜单栏项目。点击菜单栏右侧的控制中心（或打开任意全屏应用）看看是否可以拖出。
-
-## 卸载
+## Build from Source
 
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.workbuddy.menubarcalendar.plist
-rm ~/Library/LaunchAgents/com.workbuddy.menubarcalendar.plist
-# 然后删除 MenuBarCalendar.app
-```
-
-## 重新编译
-
-```bash
+git clone <your-repo-url> MenuBarCalendar
 cd MenuBarCalendar
+./build.sh
+open build/MenuBarCalendar.app
+```
+
+Or manually:
+
+```bash
 swiftc -o MenuBarCalendar.app/Contents/MacOS/MenuBarCalendar \
   -framework AppKit -framework Foundation -framework UserNotifications \
-  AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+  main.swift AppDelegate.swift CalendarViewController.swift LaunchAtLoginManager.swift
+cp Info.plist MenuBarCalendar.app/Contents/Info.plist
 codesign --force --deep --sign - MenuBarCalendar.app
 ```
+
+## Usage
+
+- The menu bar shows today's date. Click it to toggle the calendar popover.
+- Click `◀` / `▶` inside the popover to switch months.
+- Click anywhere outside the popover to close it.
+
+## Uninstall
+
+```bash
+# 1. Remove the login item
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.menubarcalendar.app.plist
+rm ~/Library/LaunchAgents/com.menubarcalendar.app.plist
+
+# 2. Quit and delete the app
+pkill MenuBarCalendar
+rm -rf /Applications/MenuBarCalendar.app
+```
+
+## How It Works
+
+- **Status bar icon**: the day-of-month is rendered into an `NSImage` and set on
+  the `NSStatusBarButton` — more reliable than `button.title` on recent macOS.
+- **Popover**: an `NSPopover` with `.transient` behavior (auto-closes on outside click).
+- **Launch at login**: writes a `LaunchAgent` plist to `~/Library/LaunchAgents`
+  and loads it via `launchctl bootstrap` — works with ad-hoc signing, no
+  Developer ID or helper app required.
+- **Entry point**: `main.swift` uses explicit top-level code instead of `@main`
+  because `@main` on `NSApplicationDelegate` subclasses silently fails on
+  macOS 26 / Swift 6.2 (see comment in `main.swift`).
+
+## Project Structure
+
+```
+├── main.swift                    # Explicit app entry point
+├── AppDelegate.swift             # Status bar item, popover, notifications
+├── CalendarViewController.swift  # Calendar grid UI + month navigation
+├── LaunchAtLoginManager.swift    # LaunchAgent install/remove
+├── Info.plist                    # Bundle config (LSUIElement = menu bar app)
+├── build.sh                      # One-command build script
+└── .github/workflows/build.yml   # CI: compiles and verifies signature
+```
+
+## Contributing
+
+Issues and pull requests are welcome! Please make sure:
+
+1. Code compiles with `./build.sh`
+2. No new `print()` debug output in release code — use `os_log` if needed
+3. Keep changes focused and documented
+
+## License
+
+[MIT](LICENSE) © Alex Liu

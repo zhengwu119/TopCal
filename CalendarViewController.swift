@@ -149,9 +149,9 @@ class CalendarViewController: NSViewController {
         let todayDay = calendar.component(.day, from: Date())
 
         // Month data
-        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else { return }
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)),
+              let range = calendar.range(of: .day, in: .month, for: currentDate) else { return }
         let weekdayOfFirst = calendar.component(.weekday, from: startOfMonth)
-        let range = calendar.range(of: .day, in: .month, for: currentDate)!
         let daysInMonth = range.count
 
         let totalCells = daysInMonth + (weekdayOfFirst - 1)

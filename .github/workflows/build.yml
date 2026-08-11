@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Swift toolchain
+        run: swift --version
+
+      - name: Build app
+        run: ./build.sh
+
+      - name: Verify app bundle
+        run: |
+          test -x build/MenuBarCalendar.app/Contents/MacOS/MenuBarCalendar
+          codesign --verify build/MenuBarCalendar.app
+          echo "Build and signature verification passed"
