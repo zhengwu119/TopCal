@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Chinese public holidays & make-up workdays (zh locales)**: a green dot at
+  the bottom of each cell marks official State-Council holidays, and a
+  neutral dot (`labelColor`, adapts to light/dark) marks the weekend
+  workdays scheduled by the annual notice. Regular weekends are unmarked.
+  Data lives in `Sources/Calendar/HolidayCalendar.swift` (edit the
+  `holidaysByYear` / `makeupWorkdaysByYear` maps each January when the
+  new notice is published).
 - Menu-bar icon now renders with a rounded border and (in Chinese locales) the
   lunar date underneath the day-of-month number
 - Per-language README switcher at the top of both READMEs (English /

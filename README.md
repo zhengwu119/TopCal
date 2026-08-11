@@ -23,6 +23,9 @@ A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; c
 - ◀ ▶ Month/year navigation inside the popover
 - 🐉 Lunar (Chinese) calendar overlay in Chinese locales — each cell shows the
   traditional `初一` … `三十` date and labels the first day of each lunar month
+- 📌 Chinese public holidays and make-up workdays (zh locales only):
+  a green dot marks every official holiday, a neutral dot marks the
+  weekend workdays scheduled by the State Council (per the annual notice)
 - 🌍 Localized: English · Simplified Chinese · Traditional Chinese · Japanese · Korean · German · French · Spanish
 - 🚀 Launch at login (via per-user LaunchAgent, no helper app required)
 - 🔔 Optional launch notification to confirm the app is running
@@ -87,6 +90,8 @@ codesign --force --deep --sign - TopCal.app
 - In Chinese locales (Simplified or Traditional) each cell also shows the
   lunar date (`初一`–`三十`, with month names like `七月` on the 1st). Adjacent
   months appear dimmed to keep the current month prominent.
+- Chinese public holidays get a green dot; make-up workdays get a neutral
+  dot. Regular weekends are left unmarked.
 
 ## Uninstall
 

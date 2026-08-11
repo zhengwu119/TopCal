@@ -15,6 +15,14 @@ import Foundation
 let args = CommandLine.arguments
 let locale = args.count > 1 ? args[1] : "zh-Hans"
 let outDir = args.count > 2 ? args[2] : "docs/zh-Hans"
+// Optional focus month "yyyy-MM" (defaults to the current month).
+let focusMonth: Date? = {
+    guard args.count > 3 else { return nil }
+    let f = DateFormatter()
+    f.dateFormat = "yyyy-MM"
+    f.locale = Locale(identifier: "en_US_POSIX")
+    return f.date(from: args[3])
+}()
 
 // Per-locale rendering config. These mirror the *.lproj/Localizable.strings
 // entries but are inlined here because the render bundle can't override
@@ -51,6 +59,9 @@ func savePNG(_ image: NSImage, to path: String) throws {
 // ------------------------------------------------------------------ popover
 let controller = CalendarViewController()
 let _ = controller.view
+if let focusMonth = focusMonth {
+    controller.showMonth(focusMonth)
+}
 controller.view.frame = NSRect(origin: .zero, size: AppConstants.Popover.size)
 controller.view.layoutSubtreeIfNeeded()
 
@@ -61,7 +72,7 @@ popoverImage.addRepresentation(rep)
 try savePNG(popoverImage, to: "\(outDir)/screenshot-popover.png")
 
 print("weekdays: \(MonthGrid.weekdaySymbols().joined(separator: " "))")
-print("title: \(MonthGrid.make(for: Date())?.formattedTitle ?? "?")")
+print("controller title: \(controller.displayedTitle)")
 
 // ------------------------------------------------------------------ icon
 let icon = StatusBarIconRenderer.image()

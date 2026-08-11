@@ -3,8 +3,9 @@
 # build_render.sh — Build the off-screen screenshot renderer (render.app)
 # and produce real AppKit-rendered images into docs/<locale>/.
 #
-# Usage: ./build_render.sh [locale ...]
+# Usage: ./build_render.sh [locale ...] [--month yyyy-MM]
 #   locale   en | zh-Hans (default: en zh-Hans)
+#   --month  focus the calendar on a specific month (default: current month)
 #
 # Output: docs/<locale>/screenshot-popover.png + menubar-icon.png
 #
@@ -15,9 +16,15 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-OUT_BASE="${1:-}"
-LOCALES=("${@:2}")
-if [ ${#LOCALES[@]} -eq 0 ]; then LOCALES=(en zh-Hans); fi
+MONTH=""
+POSITIONAL=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --month) MONTH="${2:-}"; shift 2 ;;
+    *) POSITIONAL+=("$1"); shift ;;
+  esac
+done
+if [ ${#POSITIONAL[@]} -gt 0 ]; then LOCALES=("${POSITIONAL[@]}"); else LOCALES=(en zh-Hans); fi
 
 TMP_DIR="$(mktemp -d -t topcal-render)"
 trap "rm -rf $TMP_DIR" EXIT
@@ -39,7 +46,11 @@ for locale in "${LOCALES[@]}"; do
   out_dir="$ROOT_DIR/docs/$locale"
   mkdir -p "$out_dir"
   echo "==> Rendering $locale -> $out_dir"
-  "$APP/Contents/MacOS/render" "$locale" "$out_dir"
+  if [ -n "$MONTH" ]; then
+    "$APP/Contents/MacOS/render" "$locale" "$out_dir" "$MONTH"
+  else
+    "$APP/Contents/MacOS/render" "$locale" "$out_dir"
+  fi
 done
 
 echo "==> Done"

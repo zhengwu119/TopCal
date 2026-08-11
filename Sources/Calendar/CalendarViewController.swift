@@ -41,6 +41,18 @@ class CalendarViewController: NSViewController {
         renderCurrentMonth()
     }
 
+    /// Jump to a specific month (used by the screenshot renderer).
+    func showMonth(_ date: Date) {
+        let _ = view
+        currentDate = date
+        renderCurrentMonth()
+    }
+
+    /// The currently displayed month title (used by the screenshot renderer).
+    var displayedTitle: String {
+        titleLabel.stringValue
+    }
+
     // MARK: - UI setup
 
     private func setupUI() {
@@ -191,6 +203,29 @@ class CalendarViewController: NSViewController {
             lunarLabel = nil
         }
 
+        // Holiday / make-up workday dot at the bottom centre
+        let dot: NSView?
+        if cell.isHoliday || cell.isMakeupWorkday {
+            let d = NSView()
+            d.wantsLayer = true
+            let radius = AppConstants.Calendar.dotRadius
+            d.layer?.cornerRadius = radius
+            d.layer?.masksToBounds = true
+            d.translatesAutoresizingMaskIntoConstraints = false
+            container.addSubview(d)
+            if cell.isHoliday {
+                d.layer?.backgroundColor = NSColor.systemGreen.cgColor
+            } else {
+                // Neutral dot adapts to light/dark appearance (white in dark,
+                // black in light); on the highlighted today cell use white.
+                d.layer?.backgroundColor = (cell.isToday
+                    ? NSColor.white : NSColor.labelColor).cgColor
+            }
+            dot = d
+        } else {
+            dot = nil
+        }
+
         // Colors
         if cell.isToday {
             container.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
@@ -212,6 +247,14 @@ class CalendarViewController: NSViewController {
             NSLayoutConstraint.activate([
                 lunarLabel.centerXAnchor.constraint(equalTo: container.centerXAnchor),
                 lunarLabel.topAnchor.constraint(equalTo: dayLabel.bottomAnchor, constant: 0)
+            ])
+        }
+        if let dot = dot {
+            NSLayoutConstraint.activate([
+                dot.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+                dot.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -2.5),
+                dot.widthAnchor.constraint(equalToConstant: AppConstants.Calendar.dotDiameter),
+                dot.heightAnchor.constraint(equalToConstant: AppConstants.Calendar.dotDiameter)
             ])
         }
 

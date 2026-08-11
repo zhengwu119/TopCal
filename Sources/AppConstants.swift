@@ -26,5 +26,7 @@ enum AppConstants {
         static let margin: CGFloat = 10
         static let topPadding: CGFloat = 10
         static let rowSpacing: CGFloat = 4
+        static let dotDiameter: CGFloat = 4
+        static let dotRadius: CGFloat = 2
     }
 }

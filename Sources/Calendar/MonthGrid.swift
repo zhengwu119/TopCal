@@ -6,6 +6,8 @@ struct MonthCell {
     let monthOffset: Int   // -1 = previous month, 0 = current, +1 = next
     let isToday: Bool
     let lunarLabel: String?
+    let isHoliday: Bool        // 法定节假日 → green dot
+    let isMakeupWorkday: Bool  // 调休上班日 → neutral dot
 
     var isCurrentMonth: Bool { monthOffset == 0 }
 }
@@ -82,8 +84,12 @@ struct MonthGrid {
 
         let isToday = calendar.isDate(cellDate, inSameDayAs: Date())
         let lunarLabel = LunarCalendar.dayLabel(for: cellDate)
-        return MonthCell(day: day, monthOffset: monthOffset, isToday: isToday,
-                         lunarLabel: lunarLabel)
+        return MonthCell(day: day,
+                         monthOffset: monthOffset,
+                         isToday: isToday,
+                         lunarLabel: lunarLabel,
+                         isHoliday: HolidayCalendar.isPublicHoliday(cellDate),
+                         isMakeupWorkday: HolidayCalendar.isMakeupWorkday(cellDate))
     }
 
     /// Localized title for the month header (e.g. "2026年8月" / "August 2026").
