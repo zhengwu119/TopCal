@@ -632,11 +632,25 @@ class CalendarViewController: NSViewController {
         container.isHoliday = cell.isHoliday
         container.isMakeupWorkday = cell.isMakeupWorkday
 
-        // Hover tooltip for holidays / make-up workdays
+        // Hover tooltip: statutory holidays / make-up workdays first (when
+        // marked), then special-festival lines for any date that is a
+        // festival (fixed Gregorian or lunar, incl. 除夕). When the holiday
+        // tooltip already shows a festival's name, the festival line only
+        // repeats the blurb.
+        var tipLines: [String] = []
         if let tip = HolidayCalendar.holidayTooltip(for: cell.date) {
-            container.toolTip = tip
+            tipLines.append(tip)
         } else if let tip = HolidayCalendar.makeupTooltip(for: cell.date) {
-            container.toolTip = tip
+            tipLines.append(tip)
+        }
+        // The holiday/make-up tooltip may already name the festival
+        // (e.g. "春节 · 放假"); avoid repeating the name in the festival line.
+        let existingName = HolidayCalendar.holidayNamePublic(for: cell.date)
+            ?? HolidayCalendar.makeupNamePublic(for: cell.date)
+        tipLines.append(contentsOf: Festivals.tooltipLines(for: cell.date,
+                                                           existingChineseName: existingName))
+        if !tipLines.isEmpty {
+            container.toolTip = tipLines.joined(separator: "\n")
         }
 
         // Gregorian day number

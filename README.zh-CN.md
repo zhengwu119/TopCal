@@ -38,6 +38,7 @@
   - **中性圆点（黑/白自动适配）** = 调休上班日（周末补班）
   - **悬停提示**：鼠标滑过带点的日期，显示具体节日与类型（如 `国庆节 · 放假`、`国庆节 · 调休上班`）
   - 普通周末不做特殊标记
+- 🎉 **特殊节日悬停提示**：鼠标滑过特殊节日（情人节、妇女节、愚人节、儿童节、教师节、光棍节、圣诞节等公历节日；元宵、七夕、重阳、腊八、除夕等农历节日）显示节日名称与一句话介绍。农历日期用系统农历计算，自动逐年准确；与法定节假日提示可叠加显示（如 `中秋节 · 放假` + 节日介绍）
 - 🌍 多语言：English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español
 - 🚀 开机自启（通过 LaunchAgent，无需辅助应用）
 - 🔔 启动通知（可选，需授予通知权限）
@@ -136,7 +137,9 @@ rm -rf /Applications/TopCal.app
 │   ├── Calendar/
 │   │   ├── CalendarViewController.swift  # 弹窗 UI + 月份切换
 │   │   ├── MonthGrid.swift              # 纯数据模型（含邻月格子）
-│   │   └── LunarCalendar.swift          # 农历计算
+│   │   ├── LunarCalendar.swift          # 农历计算
+│   │   ├── HolidayCalendar.swift        # 法定节假日 / 调休数据
+│   │   └── Festivals.swift              # 特殊节日提示数据（公历固定 + 农历）
 │   ├── LaunchAtLogin/
 │   │   └── LaunchAtLoginManager.swift   # LaunchAgent 安装/移除
 │   ├── Notifications/

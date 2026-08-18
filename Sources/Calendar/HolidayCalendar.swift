@@ -84,6 +84,18 @@ enum HolidayCalendar {
                        fallback: "%@ · Make-up Workday")
     }
 
+    /// Raw (Chinese) statutory-holiday name for a date, or nil.
+    /// Used by the view controller to avoid repeating the festival name
+    /// when a special-festival tooltip line is appended.
+    static func holidayNamePublic(for date: Date) -> String? {
+        holidayName(for: date)
+    }
+
+    /// Raw (Chinese) make-up workday's associated holiday name, or nil.
+    static func makeupNamePublic(for date: Date) -> String? {
+        makeupName(for: date)
+    }
+
     // MARK: - Helpers
 
     private static func holidayName(for date: Date) -> String? {

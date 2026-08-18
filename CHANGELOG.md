@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- **Special-festival hover tooltips**: hovering any day that is a special
+  festival now shows the festival's name and a one-line description — fixed
+  Gregorian festivals (情人节 2/14, 妇女节 3/8, 植树节 3/12, 愚人节 4/1,
+  青年节 5/4, 儿童节 6/1, 建军节 8/1, 教师节 9/10, 万圣节 10/31,
+  光棍节 11/11, 平安夜 12/24, 圣诞节 12/25, 跨年夜 12/31) and lunar
+  festivals (春节, 元宵节, 端午节, 七夕节, 中秋节, 重阳节, 腊八节, 除夕).
+  Lunar dates are resolved with Foundation's `.chinese` calendar, so the
+  tooltip stays correct every year without data updates; 除夕 is detected as
+  the day before lunar 1/1. When a day is also a statutory holiday or
+  make-up workday, the existing "放假 / 调休上班" line stays and the festival
+  description is appended (the name is not repeated). Tooltips follow the
+  in-app language (Chinese blurb in Chinese UIs, English otherwise).
+  The 24 solar terms are intentionally not covered.
+
 
 ## [1.4.2] - 2026-08-11
 

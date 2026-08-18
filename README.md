@@ -28,6 +28,17 @@ A minimal macOS menu bar calendar. Shows today's day-of-month in the menu bar; c
   weekend workdays scheduled by the State Council (per the annual notice).
   Hover a marked day to see which holiday it is, e.g.
   `国庆节 · 放假` or `National Day · Make-up Workday`
+- 🎉 **Special-festival hover tooltips**: hover any day that is a special
+  festival to see its name and a one-line description — fixed Gregorian
+  festivals (Valentine's Day, Women's Day, Arbor Day, April Fools' Day,
+  Youth Day, Children's Day, Army Day, Teachers' Day, Halloween,
+  Singles' Day, Christmas Eve, Christmas, New Year's Eve) and lunar
+  festivals (Lantern Festival, Qixi, Dragon Boat, Mid-Autumn, Double
+  Ninth, Laba Festival, Lunar New Year's Eve). Lunar dates are resolved
+  with the system's `.chinese` calendar, so they stay correct every year
+  without data updates; 除夕 is the day before lunar 1/1. On statutory
+  holiday / make-up days the existing line is kept and the festival
+  description is appended on a second line
 - ◀ ▶ Monthly navigation + « » **year** navigation (SF Symbols chevrons)
 - 🧮 **Day calculator**: two buttons in the toolbar below the grid —
   *Workdays* and *Days*. Pick any two cells in the popover to get the
@@ -157,7 +168,9 @@ rm -rf /Applications/TopCal.app
 │   ├── Calendar/
 │   │   ├── CalendarViewController.swift  # Popover UI + navigation
 │   │   ├── MonthGrid.swift              # Pure data model with adjacent-month cells
-│   │   └── LunarCalendar.swift          # Chinese lunar date helpers
+│   │   ├── LunarCalendar.swift          # Chinese lunar date helpers
+│   │   ├── HolidayCalendar.swift        # Statutory holidays / make-up workdays
+│   │   └── Festivals.swift              # Special-festival tooltip data (fixed + lunar)
 │   ├── LaunchAtLogin/
 │   │   └── LaunchAtLoginManager.swift   # LaunchAgent install/remove
 │   ├── Notifications/
