@@ -86,14 +86,19 @@ enum HolidayCalendar {
 
     /// Raw (Chinese) statutory-holiday name for a date, or nil.
     /// Used by the view controller to avoid repeating the festival name
-    /// when a special-festival tooltip line is appended.
+    /// when a special-festival tooltip line is appended. Mirrors
+    /// `holidayTooltip`'s `shouldShow()` gate so that when the holiday
+    /// markers are off the festival line keeps its own name.
     static func holidayNamePublic(for date: Date) -> String? {
-        holidayName(for: date)
+        guard shouldShow() else { return nil }
+        return holidayName(for: date)
     }
 
     /// Raw (Chinese) make-up workday's associated holiday name, or nil.
+    /// Same `shouldShow()` gate as `makeupTooltip` — see `holidayNamePublic`.
     static func makeupNamePublic(for date: Date) -> String? {
-        makeupName(for: date)
+        guard shouldShow() else { return nil }
+        return makeupName(for: date)
     }
 
     // MARK: - Helpers

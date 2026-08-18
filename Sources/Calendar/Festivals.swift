@@ -100,8 +100,8 @@ enum Festivals {
 
     /// 除夕 — the day before the first day of the lunar new year.
     private static let chuxi = Festival(name: "除夕", englishName: "Lunar New Year's Eve",
-                                        blurb: "农历新年前夜，年夜饭、守岁、贴春联",
-                                        englishBlurb: "Lunar New Year's Eve: family dinner, staying up late, couplets")
+                                        blurb: "年夜饭、守岁、贴春联",
+                                        englishBlurb: "family reunion dinner, staying up late, pasting couplets")
 
     /// All festivals falling on the given date (fixed Gregorian + lunar).
     static func all(for date: Date) -> [Festival] {
@@ -113,10 +113,13 @@ enum Festivals {
             result.append(fixed)
         }
 
-        if let lunar = lunarComponents(for: date) {
-            if let lunarFestival = lunarByMonthDay[lunar.month * 100 + lunar.day] {
+        if let lunar = LunarCalendar.components(for: date) {
+            if !isLeapMonth(date),
+               let lunarFestival = lunarByMonthDay[lunar.month * 100 + lunar.day] {
                 result.append(lunarFestival)
             }
+            // 除夕 is defined by position (the day before lunar 1/1), so it
+            // fires even in the hypothetical case of a leap 12th month.
             if lunar.month == 12, lunar.day >= 29, isLunarNewYearsEve(date) {
                 result.append(chuxi)
             }
@@ -138,18 +141,29 @@ enum Festivals {
 
     // MARK: - Helpers
 
-    private static func lunarComponents(for date: Date) -> (month: Int, day: Int)? {
-        var calendar = Calendar(identifier: .chinese)
-        calendar.locale = Locale(identifier: "zh_CN")
-        let comps = calendar.dateComponents([.month, .day], from: date)
-        guard let month = comps.month, let day = comps.day else { return nil }
-        return (month, day)
-    }
-
     /// True when the day after `date` is the 1st of the first lunar month.
     private static func isLunarNewYearsEve(_ date: Date) -> Bool {
         guard let nextDay = LocaleProvider.calendar.date(byAdding: .day, value: 1, to: date),
-              let next = lunarComponents(for: nextDay) else { return false }
+              let next = LunarCalendar.components(for: nextDay) else { return false }
         return next.month == 1 && next.day == 1
+    }
+
+    /// Whether `date` falls in a leap lunar month (闰月).
+    ///
+    /// Traditional festivals attach to the *regular* month, so a 5/5 landing
+    /// in 闰五月 (e.g. 2028-06-27) must NOT trigger 端午 — the real festival
+    /// that year is in the regular 五月 (2028-05-28).
+    ///
+    /// Detection: walk back to the 1st of the containing lunar month; the
+    /// month is a leap one iff the day before that 1st still has the same
+    /// month number (a leap month repeats the previous month's number).
+    private static func isLeapMonth(_ date: Date) -> Bool {
+        guard let comps = LunarCalendar.components(for: date), comps.day >= 1,
+              let firstDay = LocaleProvider.calendar.date(byAdding: .day, value: 1 - comps.day, to: date),
+              let beforeFirst = LocaleProvider.calendar.date(byAdding: .day, value: -1, to: firstDay),
+              let previous = LunarCalendar.components(for: beforeFirst) else {
+            return false
+        }
+        return previous.month == comps.month
     }
 }

@@ -17,7 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   festivals (春节, 元宵节, 端午节, 七夕节, 中秋节, 重阳节, 腊八节, 除夕).
   Lunar dates are resolved with Foundation's `.chinese` calendar, so the
   tooltip stays correct every year without data updates; 除夕 is detected as
-  the day before lunar 1/1. When a day is also a statutory holiday or
+  the day before lunar 1/1. Lunar festivals match the *regular* month only —
+  a festival date landing in a leap month (闰月, e.g. 闰五月初五 on 2028-06-27)
+  does not fire. When a day is also a statutory holiday or
   make-up workday, the existing "放假 / 调休上班" line stays and the festival
   description is appended (the name is not repeated). Tooltips follow the
   in-app language (Chinese blurb in Chinese UIs, English otherwise).
